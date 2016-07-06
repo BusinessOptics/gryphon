@@ -7,11 +7,11 @@ class Cluster:
 
 
 class Task:
-    def __init__(self, arn,  name, definition, containers, instances):
+    def __init__(self, arn, definition, containers, cluster, instances):
         self.arn = arn
-        self.name = name
         self.definition = definition
         self.containers = containers
+        self.cluster = cluster
         self.instances = instances
 
 

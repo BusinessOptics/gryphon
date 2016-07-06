@@ -16,22 +16,66 @@ import functools
 
 from flask import Flask, request, render_template, send_from_directory
 import boto3
+import aws_classes
+
+clusters = {}
+tasks = {}
+instances = {}
+containers = {}
+definitions = {}
 
 boto3.setup_default_session(region_name='us-east-1')
 ecs = boto3.client('ecs')
 ec2 = boto3.resource('ec2')
 insts = ec2.instances.filter(
     Filters=[{'Name': 'instance-state-name', 'Values': ['running']}])
-for inst in insts:
-    print inst.tags
 
+
+def create_clusters():
+    arns = ecs.list_clusters()['clusterArns']
+    cluster_keys = []
+    for arn in arns:
+        if clusters.get(arn):
+            continue
+        cluster_keys.append(arn)
+    if cluster_keys:
+        cluster_info = ecs.describe_clusters(clusters=cluster_keys)['clusters']
+        for cluster in cluster_info:
+            temp_cluster = aws_classes.Cluster(cluster['clusterArn'], cluster['clusterName'], None, None)
+            clusters[cluster['clusterArn']] = temp_cluster
+
+        for arn in clusters.keys():
+            if arn in arns:
+                continue
+            del clusters[arn]
+
+
+def create_tasks(cluster_arn):
+    arns = ecs.list_tasks(cluster=cluster_arn)['taskArns']
+    task_keys = []
+    for arn in arns:
+        if tasks.get(arn):
+            continue
+        task_keys.append(arn)
+
+    if task_keys:
+        task_info = ecs.describe_tasks(task_keys)['tasks']
+
+        for task in task_info:
+            temp_task = aws_classes.Task(task['taskArn'], task['taskDefinitionArn'], None, cluster_arn,None)
+            tasks[task['taskArn']] = temp_task
+
+        for arn in clusters.keys():
+            if arn in arns:
+                continue
+            del clusters[arn]
 
 
 def jp(j):
     print(json.dumps(j, indent=2, default=lambda x: str(x) if isinstance(x, datetime) else json.dumps(x)))
 
 
-@functools.lru_cache(maxsize=None)
+#  @functools.lru_cache(maxsize=None)
 def get_task_definition(arn):
     return ecs.describe_task_definition(
         taskDefinition=arn
