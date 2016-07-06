@@ -1,0 +1,20 @@
+{% extends "template.html" %}
+{% block title %}Cluster Overview{% endblock %}
+{% block scripts %}
+{% endblock %}
+{% block body %}
+<div class='header'>
+    <h1>Clusters Overview</h1>
+    <div class='task' style='color: #333333; font-size: 30px;'>
+        Clusters
+        <ul class='container-list'>
+            {% for cluster in clusters %}
+            <li>
+                {{cluster}}
+                <a class="action" style="font-size: 28px;" target='_blank' href='cluster/{{clusters[cluster]}}'>{{clusters[cluster]}}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
