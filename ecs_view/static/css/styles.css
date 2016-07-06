@@ -1,0 +1,101 @@
+body {
+    font-family: helvetica;
+    color: #333;
+    padding: 0px;
+    margin: 0px;
+}
+
+
+.header {
+    background-color: hsl(0, 0%, 20%);
+    color: #ececec;
+    padding: 3px;
+}
+
+.header h1 {
+    margin: 0px;
+    font-size: 22px;
+}
+
+.overview {
+    display: flex;
+    justify-content: space-between;
+}
+
+.instances-container {
+    padding: 1em;
+    padding-right: 0px;
+}
+
+.families {
+    padding: 1em;
+    min-width:250px;
+    border-left: 1px solid #bbb;
+}
+
+.instances {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.instance {
+    min-width: 350px;
+    float: left;
+    margin-right: 1em;
+    margin-bottom: 1em;
+    padding: 0.5em;
+    background-color: #f7f7f7;
+    border: 1px solid #bbb;
+}
+
+.task {
+    margin: 0.5em;
+    padding: 0.5em;
+    background-color: rgb(170, 210, 141);
+    border: 1px solid #75b348;
+}
+
+.container {
+
+}
+
+.family {
+    margin-bottom: 1em;
+    padding: 0.5em;
+    background-color: #f7f7f7;
+    border: 1px solid #bbb;
+}
+
+.action {
+    float: right;
+    display: block;
+    padding: 0px 3px;
+    margin-left: 3px;
+    text-decoration: none;
+    background: #75b348;
+    /* font-variant: small-caps; */
+    color: white;
+    border-radius: 2px;
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px solid #75b348;
+}
+
+.action:hover {
+    background-color: rgb(170, 210, 141);
+    border: 1px solid #75b348;
+}
+
+ul.container-list {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+}
+
+ul.container-list li {
+    padding: 2px;
+    background: #f7f7f7;
+    margin: 3px 0px;
+    border: 1px solid #75b348;
+}

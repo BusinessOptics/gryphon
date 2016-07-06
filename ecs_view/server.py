@@ -22,16 +22,12 @@ ecs = boto3.client('ecs')
 ec2 = boto3.resource('ec2')
 insts = ec2.instances.filter(
     Filters=[{'Name': 'instance-state-name', 'Values': ['running']}])
-for inst in insts:
-    print inst.tags
-
-
 
 def jp(j):
     print(json.dumps(j, indent=2, default=lambda x: str(x) if isinstance(x, datetime) else json.dumps(x)))
 
 
-@functools.lru_cache(maxsize=None)
+# @functools.lru_cache(maxsize=None)
 def get_task_definition(arn):
     return ecs.describe_task_definition(
         taskDefinition=arn
@@ -104,6 +100,12 @@ def overview(cluster_name):
     instances, families = get_cluster_overview(cluster_name)
     return render_template('overview.html', instances=instances, families=families, cluster_name=cluster_name)
 
+
+@app.route('/')
+def index():
+    create_clusters()
+    clust = {cluster: clusters[cluster].name for cluster in clusters}
+    return render_template('index.html', clusters=clust)
 
 @app.route('/static/<path:path>')
 def send_staticfles(path):
