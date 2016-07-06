@@ -26,10 +26,17 @@ class Cluster:
 
 class Task:
 
-    def __init__(self, definition, containers, instances):
+    def __init__(self, name, definition, containers, instances):
+        self.name = name
         self.definition = definition
         self.containers = containers
         self.instances = instances
+
+    def get_name(self):
+        return self.name
+
+    def set_name(self, name):
+        self.name = name
 
     def get_definition(self):
         return self.definition
@@ -51,8 +58,8 @@ class Task:
 
 
 class Instance:
-    def __init__(self, id, name, auto_scaling_group, cluster, tasks):
-        self.id = id
+    def __init__(self, inst_id, name, auto_scaling_group, cluster, tasks):
+        self.id = inst_id
         self.name = name
         self.auto_scaling_group = auto_scaling_group
         self.cluster = cluster
@@ -96,8 +103,15 @@ class AutoScalingGroup:
 
 class Container:
 
-    def __init__(self, task):
+    def __init__(self, name, task):
+        self.name = name
         self.task = task
+
+    def get_name(self):
+        return self.name
+
+    def set_name(self, name):
+        self.name = name
 
     def get_task(self):
         return self.task
@@ -108,8 +122,15 @@ class Container:
 
 class TaskDefinition:
 
-    def __init__(self, tasks):
+    def __init__(self, name, tasks):
+        self.name = name
         self.tasks = tasks
+
+    def get_name(self):
+        return self.name
+
+    def set_name(self, name):
+        self.name = name
 
     def get_task(self):
         return self.tasks
