@@ -20,6 +20,11 @@ import boto3
 boto3.setup_default_session(region_name='us-east-1')
 ecs = boto3.client('ecs')
 ec2 = boto3.resource('ec2')
+insts = ec2.instances.filter(
+    Filters=[{'Name': 'instance-state-name', 'Values': ['running']}])
+for inst in insts:
+    print inst.tags
+
 
 
 def jp(j):
