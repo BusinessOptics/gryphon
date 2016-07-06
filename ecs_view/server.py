@@ -57,18 +57,19 @@ def create_tasks(cluster_arn):
         if tasks.get(arn):
             continue
         task_keys.append(arn)
-
     if task_keys:
-        task_info = ecs.describe_tasks(task_keys)['tasks']
-
+        task_info = ecs.describe_tasks(cluster=cluster_arn,tasks=task_keys)['tasks']
         for task in task_info:
-            temp_task = aws_classes.Task(task['taskArn'], task['taskDefinitionArn'], None, cluster_arn,None)
+            containers = []
+            for cont in task['containers']:
+                containers.append(cont['containerArn'])
+            temp_task = aws_classes.Task(task['taskArn'], task['taskDefinitionArn'], containers, cluster_arn, None)
             tasks[task['taskArn']] = temp_task
 
-        for arn in clusters.keys():
+        for arn in tasks.keys():
             if arn in arns:
                 continue
-            del clusters[arn]
+            del tasks[arn]
 
 
 def jp(j):
@@ -161,4 +162,7 @@ def send_staticfles(path):
 
 
 if __name__ == '__main__':
+    create_clusters()
+    create_tasks(clusters.keys()[0])
+    print tasks
     app.run(debug=True)
