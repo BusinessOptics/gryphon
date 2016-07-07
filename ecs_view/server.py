@@ -9,114 +9,19 @@ Monitored/Celery Tasks
 
 Current State
 """
+
 from collections import defaultdict
 from datetime import datetime
 import json
 import functools
 
 from flask import Flask, request, render_template, send_from_directory
-import boto3
-import aws_classes
-
-boto3.setup_default_session(region_name='us-east-1')
-ecs = boto3.client('ecs')
-ec2 = boto3.resource('ec2')
-auto_scaling = boto3.client('autoscaling')
-insts = ec2.instances.filter(
-    Filters=[{'Name': 'instance-state-name', 'Values': ['running']}])
-
-
-def create_clusters():
-    clusters = {}
-    arns = ecs.list_clusters()['clusterArns']
-    cluster_keys = []
-    for arn in arns:
-        if clusters.get(arn):
-            continue
-        cluster_keys.append(arn)
-    if cluster_keys:
-        cluster_info = ecs.describe_clusters(clusters=cluster_keys)['clusters']
-        for cluster in cluster_info:
-            temp_cluster = aws_classes.Cluster(cluster['clusterArn'], cluster['clusterName'], None,
-                                               None)
-            clusters[cluster['clusterArn']] = temp_cluster
-    return clusters
-    # for arn in clusters.keys():
-    #     if arn in arns:
-    #         continue
-    #     del clusters[arn]
-
-
-def cluster_details(cluster_arn):
-    tasks = {}
-    instances = {}
-    containers = {}
-    task_defs = {}
-    arns = ecs.list_tasks(cluster=cluster_arn)['taskArns']
-    task_keys = []
-    for arn in arns:
-        if tasks.get(arn):
-            continue
-        task_keys.append(arn)
-    if not task_keys:
-        return None
-    task_info = ecs.describe_tasks(cluster=cluster_arn, tasks=task_keys)['tasks']
-    cont_inst_arn = defaultdict(list)
-    task_dict = defaultdict(list)
-    for task in task_info:
-        for cont in task['containers']:
-            containers[cont['containerArn']] = aws_classes.Container(cont['containerArn'],
-                                                                     cont['name'],
-                                                                     task['taskArn'])
-        cont_inst_arn[task['containerInstanceArn']].append(task['taskArn'])
-        tasks[task['taskArn']] = aws_classes.Task(task['taskArn'], task['taskDefinitionArn'],
-                                                  containers.keys(),
-                                                  cluster_arn, None)  # Needs instance ID
-        task_dict[task['taskDefinitionArn']].append(task['taskArn'])
-
-    for task_definition in task_dict.keys():
-        task_def_info = get_task_definition(task_definition)
-        task_defs[task_def_info['taskDefinitionArn']] = aws_classes.TaskDefinition(
-            task_def_info['taskDefinitionArn'],
-            task_def_info['family'],
-            task_def_info['revision'],
-            task_dict[task_definition])
-
-    container_instances = ecs.describe_container_instances(cluster=cluster_arn,
-                                                           containerInstances=cont_inst_arn.keys())[
-        'containerInstances']
-    instance_ids = {}
-    for container in container_instances:
-        instance_ids[container['ec2InstanceId']] = container['containerInstanceArn']
-    auto_instances = auto_scaling.describe_auto_scaling_instances(InstanceIds=instance_ids.keys())[
-        'AutoScalingInstances']
-    for instance in auto_instances:
-        instances[instance['InstanceId']] = aws_classes.Instance(instance['InstanceId'],
-                                                                 instance_ids[
-                                                                     instance['InstanceId']],
-                                                                 instance['AutoScalingGroupName'],
-                                                                 instance['LifecycleState'],
-                                                                 cluster_arn,
-                                                                 cont_inst_arn[instance_ids[
-                                                                     instance['InstanceId']]])
-        # Needs list of task arns
-    for inst_id in instances.keys():
-        for task_arn in instances[inst_id].tasks:
-            tasks[task_arn].instance = inst_id
-    return task_defs, tasks, containers, instances
 
 
 def jp(j):
     print(
-    json.dumps(j, indent=2, default=lambda x: str(x) if isinstance(x, datetime) else json.dumps(x)))
-
-
-@functools.lru_cache(maxsize=None)
-def get_task_definition(arn):
-    return ecs.describe_task_definition(
-        taskDefinition=arn
-    )['taskDefinition']
-
+        json.dumps(j, indent=2,
+                   default=lambda x: str(x) if isinstance(x, datetime) else json.dumps(x)))
 
 def get_cluster_overview(cluster_name):
     instances = defaultdict(lambda: {'tasks': []})
