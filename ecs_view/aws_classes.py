@@ -127,10 +127,10 @@ class Cluster:
                 tasks=task_list,
                 ip=ec2_instances[ec2_id].private_ip_address,
                 type=ec2_instances[ec2_id].instance_type,
-                CPU=reg_resources.get('CPU'),
-                CPUrem=rem_resources.get('CPU'),
-                MEM=reg_resources.get('MEMORY'),
-                MEMrem=rem_resources.get('MEMORY'))  # Needs list of task arns
+                cpu=reg_resources.get('CPU'),
+                cpu_rem=rem_resources.get('CPU'),
+                mem=reg_resources.get('MEMORY'),
+                mem_rem=rem_resources.get('MEMORY'))  # Needs list of task arns
         for inst in instances.values():
             for task in inst.tasks:
                 task.instance = inst
@@ -152,8 +152,8 @@ class Task:
 class Instance:
     def __init__(self, inst_id=None, container_instance_arn=None, name=None,
                  auto_scaling_group=None,
-                 ip=None, type=None, life_cycle_state=None, cluster=None, tasks=None, CPU=None,
-                 CPUrem=None, MEM=None, MEMrem=None):
+                 ip=None, type=None, life_cycle_state=None, cluster=None, tasks=None, cpu=None,
+                 cpu_rem=None, mem=None, mem_rem=None):
         self.id = inst_id
         self.container_instance_arn = container_instance_arn
         self.name = name
@@ -163,13 +163,29 @@ class Instance:
         self.life_cycle_state = life_cycle_state
         self.cluster = cluster
         self.tasks = tasks
-        self.CPU = CPU
-        self.CPUrem = CPUrem
-        self.MEM = MEM
-        self.MEMrem = MEMrem
+        self.cpu = cpu
+        self.cpu_rem = cpu_rem
+        self.mem = mem
+        self.mem_rem = mem_rem
+
+    @property
+    def cpu_perc(self):
+        return (self.cpu_used/self.cpu)*100
+
+    @property
+    def mem_perc(self):
+        return (self.mem_used / self.mem) * 100
+
+    @property
+    def cpu_used(self):
+        return self.cpu - self.cpu_rem
+
+    @property
+    def mem_used(self):
+        return self.mem - self.mem_rem
 
     def __str__(self):
-        return str(self.id)+" "+str(self.name)+" "+str(self.CPU)
+        return str(self.id)+" "+str(self.name)+" "+str(self.cpu)
 
 
 class Container:
