@@ -14,25 +14,14 @@ from collections import defaultdict
 from datetime import datetime
 import json
 import functools
-from setup_classes import create_clusters
+from aws_classes import *
 from flask import Flask, request, render_template, send_from_directory
-import boto3
-
-ecs = boto3.client('ecs')
-ec2 = boto3.resource('ec2')
 
 
 def jp(j):
     print(
         json.dumps(j, indent=2,
                    default=lambda x: str(x) if isinstance(x, datetime) else json.dumps(x)))
-
-
-def get_task_definition(arn):
-    return ecs.describe_task_definition(
-        taskDefinition=arn
-    )['taskDefinition']
-
 
 def get_cluster_overview(cluster_name):
     instances = defaultdict(lambda: {'tasks': []})
@@ -124,6 +113,6 @@ def send_staticfles(path):
 
 
 if __name__ == '__main__':
-    # clusters = create_clusters()
-    # cluster_details(clusters.keys()[0])
+    clusters = create_clusters()
+    clusters[2].setup_cluster()
     app.run(debug=True)
