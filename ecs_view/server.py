@@ -9,6 +9,8 @@ Monitored/Celery Tasks
 
 Current State
 """
+
+
 from collections import defaultdict
 from datetime import datetime
 import json
@@ -16,6 +18,7 @@ import functools
 
 from flask import Flask, request, render_template, send_from_directory
 import boto3
+# TODO from aws_classes import Task ......
 import aws_classes
 
 boto3.setup_default_session(region_name='us-east-1')
@@ -51,14 +54,12 @@ def cluster_details(cluster_arn):
     instances = {}
     containers = {}
     task_defs = {}
-    arns = ecs.list_tasks(cluster=cluster_arn)['taskArns']
-    task_keys = []
-    for arn in arns:
-        if tasks.get(arn):
-            continue
-        task_keys.append(arn)
+
+    task_keys = ecs.list_tasks(cluster=cluster_arn)['taskArns']
+
     if not task_keys:
         return None
+
     task_info = ecs.describe_tasks(cluster=cluster_arn, tasks=task_keys)['tasks']
     cont_inst_arn = defaultdict(list)
     task_dict = defaultdict(list)
@@ -71,28 +72,39 @@ def cluster_details(cluster_arn):
                                                   cluster_arn, None)  # Needs instance ID
         task_dict[task['taskDefinitionArn']].append(task['taskArn'])
 
-    for task_definition in task_dict.keys():
-        task_def_info = get_task_definition(task_definition)
+    for task_def_arn, child_task_arns in task_dict.items():
+        task_def_info = get_task_definition(task_def_arn)
+        #TODO use named_arguments everywhere
         task_defs[task_def_info['taskDefinitionArn']] = aws_classes.TaskDefinition(task_def_info['taskDefinitionArn'],
                                                                                    task_def_info['family'],
-                                                                                   task_dict[task_definition])
+                                                                                   child_task_arns)
 
-    container_instances = ecs.describe_container_instances(cluster=cluster_arn, containerInstances=cont_inst_arn.keys())['containerInstances']
-    instance_ids = {}
+    container_instances = ecs.describe_container_instances(
+                                cluster=cluster_arn,
+                                containerInstances=cont_inst_arn.keys()
+                                )['containerInstances']
+    ec2_id_to_ci_arn = {}
     for container in container_instances:
+        ec2_id_to_ci_arn[container['ec2InstanceId']] = container['containerInstanceArn']
 
-        instance_ids[container['ec2InstanceId']] = container['containerInstanceArn']
-    auto_instances = auto_scaling.describe_auto_scaling_instances(InstanceIds=instance_ids.keys())['AutoScalingInstances']
+    auto_instances = auto_scaling.describe_auto_scaling_instances(
+                                        InstanceIds=ec2_id_to_ci_arn.keys()
+                                        )['AutoScalingInstances']
     for instance in auto_instances:
-        instances[instance['InstanceId']] = aws_classes.Instance(instance['InstanceId'],
-                                                                 instance_ids[instance['InstanceId']],
-                                                                 instance['AutoScalingGroupName'],
-                                                                 instance['LifecycleState'],
-                                                                 cluster_arn,
-                                                                 cont_inst_arn[instance_ids[instance['InstanceId']]])  # Needs list of task arns
+        ec_id = instance['InstanceId']
+        ci_arn = ec2_id_to_ci_arn[ec2_id]
+        instances[ec2_id] = aws_classes.Instance(
+                                            id = ec_id,
+                                            container_instance_arn = ci_arn,
+                                                 instance['AutoScalingGroupName'],
+                                                 instance['LifecycleState'],
+                                                 cluster_arn,
+                                                 cont_inst_arn[ci_arn])  # Needs list of task arns
     for inst_id in instances.keys():
         for task_arn in instances[inst_id].tasks:
             tasks[task_arn].instance = inst_id
+
+    #
     return task_defs, tasks, containers, instances
 
 def jp(j):
