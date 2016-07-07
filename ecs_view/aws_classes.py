@@ -134,9 +134,9 @@ class Cluster:
         for inst in instances.values():
             for task in inst.tasks:
                 task.instance = inst
-        self.instances = instances.values()
-        self.tasks = tasks.values()
-        self.task_families = task_families.values()
+        self.instances = sorted(instances.values(), key=lambda x: x.name)
+        self.tasks = sorted(tasks.values(), key=lambda x: x.definition.family.name)
+        self.task_families = sorted(task_families.values(), key=lambda x: x.name)
         return self
 
 
