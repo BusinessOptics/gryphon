@@ -113,6 +113,4 @@ def send_staticfles(path):
 
 
 if __name__ == '__main__':
-    clusters = create_clusters()
-    clusters[2].setup_cluster()
     app.run(debug=True)

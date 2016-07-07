@@ -43,12 +43,12 @@ class Cluster:
         containers = {}
         task_defs = {}
         task_families = {}
-        task_keys = ecs.list_tasks(cluster=self.arn)['taskArns']
+        task_keys = ecs.list_tasks(cluster=self.name)['taskArns']
 
         if not task_keys:
             return None
 
-        task_info = ecs.describe_tasks(cluster=self.arn, tasks=task_keys)['tasks']
+        task_info = ecs.describe_tasks(cluster=self.name, tasks=task_keys)['tasks']
         cont_inst_arn = defaultdict(list)
         task_dict = defaultdict(list)
         for task in task_info:
@@ -81,7 +81,7 @@ class Cluster:
         for name, task_defs in families.items():
             task_families[name] = TaskFamily(name=name, task_defs=task_defs)
 
-        container_instances = ecs.describe_container_instances(cluster=self.arn,
+        container_instances = ecs.describe_container_instances(cluster=self.name,
                                                                containerInstances=cont_inst_arn.keys()
                                                                )['containerInstances']
         ec2_id_to_ci = {}
