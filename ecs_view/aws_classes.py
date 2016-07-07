@@ -7,18 +7,18 @@ class Cluster:
 
 
 class Task:
-    def __init__(self, arn, definition, containers, cluster, instances):
+    def __init__(self, arn, definition, containers, cluster, instance):
         self.arn = arn
         self.definition = definition
         self.containers = containers
         self.cluster = cluster
-        self.instances = instances
+        self.instance = instance
 
 
 class Instance:
-    def __init__(self, inst_id, name, auto_scaling_group, life_cycle_state, cluster, tasks):
+    def __init__(self, inst_id, container_instance_arn, auto_scaling_group, life_cycle_state, cluster, tasks):
         self.id = inst_id
-        self.name = name
+        self.container_instance_arn = container_instance_arn
         self.auto_scaling_group = auto_scaling_group
         self.life_cycle_state = life_cycle_state
         self.cluster = cluster
@@ -33,7 +33,7 @@ class Container:
 
 
 class TaskDefinition:
-    def __init__(self, arn, name, tasks):
+    def __init__(self, arn, family, tasks):
         self.arn = arn
-        self.name = name
+        self.family = family
         self.tasks = tasks
