@@ -162,29 +162,29 @@ class Instance:
         self.life_cycle_state = life_cycle_state
         self.cluster = cluster
         self.tasks = tasks
-        self.CPU = cpu
-        self.CPUrem = cpu_rem
-        self.MEM = mem
-        self.MEMrem = mem_rem
+        self.cpu = cpu
+        self.cpu_rem = cpu_rem
+        self.mem = mem
+        self.mem_rem = mem_rem
 
     @property
     def cpu_perc(self):
         return (self.cpu_used/self.cpu)*100
 
     @property
-    def cpu_perc(self):
+    def mem_perc(self):
         return (self.mem_used / self.mem) * 100
 
     @property
     def cpu_used(self):
-        return self.CPU - self.CPUrem
+        return self.cpu - self.cpu_rem
 
     @property
     def mem_used(self):
-        return self.MEM - self.MEMrem
+        return self.mem - self.mem_rem
 
     def __str__(self):
-        return str(self.id)+" "+str(self.name)+" "+str(self.CPU)
+        return str(self.id)+" "+str(self.name)+" "+str(self.cpu)
 
 
 class Container:
