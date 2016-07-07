@@ -148,11 +148,17 @@ def overview(cluster_name):
     instances, families = get_cluster_overview(cluster_name)
     return render_template('overview.html', instances=instances, families=families, cluster_name=cluster_name)
 
+#
+# @app.route('/cluster_test/<cluster_name>/', methods=['GET', 'POST'])
+# def overview(cluster_name):
+#     cluster = cluster_details(cluster_name)
+#     return render_template('test.html', cluster=cluster)
+
 
 @app.route('/')
 def index():
     create_clusters()
-    clust = {cluster: clusters[cluster].name for cluster in clusters}
+    clust = {clusters[cluster].name: cluster for cluster in clusters}
     return render_template('index.html', clusters=clust)
 
 @app.route('/static/<path:path>')

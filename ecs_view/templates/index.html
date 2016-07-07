@@ -1,20 +1,22 @@
 {% extends "template.html" %}
-{% block title %}Cluster Overview{% endblock %}
+{% block title %}Clusters Overview{% endblock %}
 {% block scripts %}
 {% endblock %}
 {% block body %}
-<div class='header'>
+<div class="header">
+    <a class="action"
+       target='_blank'
+       href="https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters">console</a>
     <h1>Clusters Overview</h1>
-    <div class='task' style='color: #333333; font-size: 30px;'>
-        Clusters
-        <ul class='container-list'>
-            {% for cluster in clusters %}
-            <li>
-                {{cluster}}
-                <a class="action" style="font-size: 28px;" target='_blank' href='cluster/{{clusters[cluster]}}'>{{clusters[cluster]}}</a>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
+</div>
+<div class="cluster-list">
+    <h2>Clusters</h2>
+    <ul>
+        {% for cluster in clusters %}
+        <li>
+            <a target="_blank" href="cluster/{{cluster}}/">{{cluster|title}}</a>
+        </li>
+        {% endfor %}
+    </ul>
 </div>
 {% endblock %}
