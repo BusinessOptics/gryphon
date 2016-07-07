@@ -79,7 +79,8 @@ class Cluster:
 
         for name, task_defs in families.items():
             task_families[name] = TaskFamily(name=name, task_defs=task_defs)
-            task_defs.family = task_families[name]
+            for task_def in task_defs:
+                task_def.family = task_families[name]
 
         container_instances = ecs.describe_container_instances(cluster=self.name,
                                                                containerInstances=cont_inst_arn.keys()
