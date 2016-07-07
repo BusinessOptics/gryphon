@@ -14,7 +14,7 @@ from collections import defaultdict
 from datetime import datetime
 import json
 import functools
-from setup_classes import create_clusters, cluster_details
+from aws_classes import *
 from flask import Flask, request, render_template, send_from_directory
 
 
@@ -108,6 +108,6 @@ def send_staticfles(path):
 
 
 if __name__ == '__main__':
+    #app.run(debug=True)
     clusters = create_clusters()
-    cluster_details(clusters.keys()[0])
-    app.run(debug=True)
+    clusters[2].setup_cluster()
