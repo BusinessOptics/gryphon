@@ -1,5 +1,5 @@
 {% extends "template.html" %}
-{% block title %}{{cluster_name|title}} cluster overview{% endblock %}
+{% block title %}{{cluster.name|title}} cluster overview{% endblock %}
 {% block scripts %}
 <script src="/static/js/picoModal.js"></script>
 <script>
@@ -32,57 +32,61 @@
     <a
             class='action'
             target='_blank'
-            href='https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/{{cluster_name}}/'>console</a>
+            href='https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/{{cluster.name}}/'>console</a>
     <a
       class='action'
       target='_blank'
       href='../../'>index</a>
-    <h1>{{cluster_name|title}} Cluster Overview</h1>
+    <h1>{{cluster.name|title}} Cluster Overview</h1>
 </div>
 <div class='overview'>
     <div class='instances-container'>
         <h2>Instances</h2>
         <div class='instances'>
+            {% set instances = cluster.instances %}
             {% for instance in instances %}
             <div class='instance'>
                 {{instance.name}}
-                ({{instance.ec2Instance.private_ip_address}})
-                <span>{{instance.ec2Instance.instance_type}}</span>
+                ({{instance.ip}})
+                <span>{{instance.type}}</span>
 
-                <a class="action" target='_blank' href='http://{{instance.ec2Instance.private_ip_address}}:9080'>cAdvisor</a>
+                <a class="action" target='_blank' href='http://{{instance.ip}}:9080'>cAdvisor</a>
 
-                <span class="action" onclick="ssh('{{instance.ec2Instance.private_ip_address}}')">ssh</span>
+                <span class="action" onclick="ssh('{{instance.ip}}')">ssh</span>
 
-                <table class="chart">
+               <table class="chart">
                     <tr>
                         <td>cpu</td>
-                        <td>2048</td>
+                        <td>{{ instance.cpu_used }}</td>
                         <td  class="bar_td">
-                            <div class="resource_bar" style="width:70%">70%</div>
+                            <div class="resource_bar" style="width:{{instance.cpu_perc}}%">
+                                {{instance.cpu_perc | round | int}}%
+                            </div>
                         </td>
-                        <td>1234</td>
+                        <td>{{ instance.cpu_rem }}</td>
                     </tr>
                     <tr>
                         <td>mem</td>
-                        <td>1024</td>
+                        <td>{{ instance.mem_used }}</td>
                         <td  class="bar_td">
-                            <div class="resource_bar" style="width:40%">40%</div>
+                            <div class="resource_bar" style="width:{{instance.mem_perc}}%">
+                                {{instance.mem_perc | round | int}}%
+                            </div>
                         </td>
-                        <td class="resource_remaining">502</td>
+                        <td class="resource_remaining">{{ instance.mem_rem }}</td>
                     </tr>
                 </table>
-
                 {% for task in instance.tasks %}
                 <div class='task'>
-                    {{task.taskDefinition.family}} - {{task.taskDefinition.revision}}
+                    {{task.definition.family.name}} - {{task.definition.revision}}
 
                     <ul class='container-list'>
                         {% for container in task.containers %}
-                        {% if container.lastStatus %}
+                        {% if container.status %}
                         <li>
                             {{container.name}}
                             <span class="action"
-                                  onclick="execContainer('{{instance.ec2Instance.private_ip_address}}','{{task.taskArn}}', '{{container.name}}')">exec</span>
+                                  onclick="execContainer('{{instance.ip}}','{{task.arn}}', '{{container.name}}')">exec</span>
                         </li>
                         {% endif %}
                         {% endfor %}
@@ -96,22 +100,29 @@
 
     <div class='families'>
         <h2>Task families</h2>
+        {% set families = cluster.task_families %}
         {% for family in families %}
         <div class='family'>
-            {{family.0}}
-            {% for task in family.1 %}
-            <div class='task'>
+            {{family.name}}
+            {% for task_def in family.task_defs %}
+                {% for task in task_def.tasks %}
+                <div class='task'>
 
-                {{task.taskDefinition.family}} - {{task.taskDefinition.revision}}
+                    {{task.definition.family.name}} - {{task.definition.revision}}
 
-                <ul class='container-list'>
-                    {% for container in task.containers %}
-                    <li>
-                        {{container.name}}
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
+                    <ul class='container-list'>
+                        {% for container in task.containers %}
+                        {% if container.status %}
+                            <li>
+                                {{container.name}}
+                                <span class="action"
+                                      onclick="execContainer('{{task.instance.ip}}','{{task.arn}}', '{{container.name}}')">exec</span>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endfor %}
             {% endfor %}
         </div>
         {% endfor %}

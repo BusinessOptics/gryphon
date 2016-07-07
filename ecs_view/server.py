@@ -20,18 +20,18 @@ from flask import Flask, request, render_template, send_from_directory
 app = Flask(__name__, static_url_path='')
 
 
-@app.route('/cluster/<cluster_name>/', methods=['GET', 'POST'])
-def overview(cluster_name):
-    cluster = Cluster(name=cluster_name)
-    cluster.setup_cluster()
-
-    return render_template('test.html', cluster=cluster)
-
-
 @app.route('/')
 def index():
     cluster_list = create_clusters()
     return render_template('index.html', clusters=cluster_list)
+
+
+@app.route('/cluster/<cluster_name>/', methods=['GET', 'POST'])
+def cluster(cluster_name):
+    cluster = Cluster(name=cluster_name)
+    cluster.setup_cluster()
+
+    return render_template('cluster.html', cluster=cluster)
 
 
 @app.route('/static/<path:path>')
