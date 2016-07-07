@@ -95,7 +95,7 @@ class Cluster:
         for instance in ec2_instances.values():
             ec2_id = instance.instance_id
             ci_arn = ec2_id_to_ci[ec2_id]['containerInstanceArn']
-            tags = {key:value for key, value in ec2_instances[ec2_id].tags}
+            tags = {val['Key']: val['Value'] for val in ec2_instances[ec2_id].tags}
             rem_resources = {}
             for resource in ec2_id_to_ci[ec2_id]['remainingResources']:
                 if resource.get('name') == 'CPU' or resource.get('name') == 'MEMORY':
@@ -132,9 +132,9 @@ class Cluster:
         for inst in instances.values():
             for task in inst.tasks:
                 task.instance = inst
-        self.instances = instances.values()
-        self.tasks = tasks.values()
-        self.task_families = task_families.values()
+        self.instances = sorted(instances.values(), key=lambda x: x.name)
+        self.tasks = sorted(tasks.values(), key=lambda x: x.definition.family.name)
+        self.task_families = sorted(task_families.values(), key=lambda x: x.name)
         return self
 
 
