@@ -169,11 +169,11 @@ class Instance:
 
     @property
     def cpu_perc(self):
-        return (self.cpu_used/self.cpu)*100
+        return (float(self.cpu_used)/float(self.cpu))*100
 
     @property
     def mem_perc(self):
-        return (self.mem_used / self.mem) * 100
+        return (float(self.mem_used) / float(self.mem)) * 100
 
     @property
     def cpu_used(self):
