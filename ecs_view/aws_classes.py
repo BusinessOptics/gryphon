@@ -124,7 +124,7 @@ class Cluster:
                 auto_scaling_group=auto_instances.get(ec2_id)['AutoScalingGroupName'],
                 life_cycle_state=auto_instances.get(ec2_id)['LifecycleState'],
                 cluster=self,
-                tasks=task_list,
+                tasks=sorted(task_list, key=lambda x: x.definition.family.name),
                 ip=ec2_instances[ec2_id].private_ip_address,
                 type=ec2_instances[ec2_id].instance_type,
                 cpu=reg_resources.get('CPU'),
