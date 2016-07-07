@@ -14,7 +14,7 @@
     <ul>
         {% for cluster in clusters %}
         <li>
-            <a target="_blank" href="cluster/{{cluster}}/">{{cluster|title}}</a>
+            <a target="_blank" href="cluster/{{cluster.name}}/">{{cluster.name|title}}</a>
         </li>
         {% endfor %}
     </ul>

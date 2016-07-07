@@ -1,5 +1,5 @@
 class Cluster:
-    def __init__(self, arn, name, tasks, instances):
+    def __init__(self, arn, name, tasks=None, instances=None):
         self.arn = arn
         self.name = name
         self.tasks = tasks

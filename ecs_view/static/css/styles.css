@@ -149,13 +149,27 @@ ul.container-list li {
 }
 
 .chart {
-    padding: 2px;
+    width: 100%;
 }
 
-.bar {
+.chart td {
+    padding: 0px;
+    font-size: small;
+}
+
+.resource_bar {
     background: #75b348;
     display: inline-block;
-    padding: 2px;
-    margin: 1px;
-    align: center;
+    color: white;
+    padding-left: 2px;
+}
+
+.bar_td {
+    width: 99%;
+    padding: 0px;
+    padding-left: 2px;
+}
+
+.resource_remaining {
+    text-align: right;
 }

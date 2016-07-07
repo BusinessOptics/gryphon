@@ -14,14 +14,25 @@ from collections import defaultdict
 from datetime import datetime
 import json
 import functools
-from setup_classes import create_clusters, cluster_details
+from setup_classes import create_clusters
 from flask import Flask, request, render_template, send_from_directory
+import boto3
+
+ecs = boto3.client('ecs')
+ec2 = boto3.resource('ec2')
 
 
 def jp(j):
     print(
         json.dumps(j, indent=2,
                    default=lambda x: str(x) if isinstance(x, datetime) else json.dumps(x)))
+
+
+def get_task_definition(arn):
+    return ecs.describe_task_definition(
+        taskDefinition=arn
+    )['taskDefinition']
+
 
 def get_cluster_overview(cluster_name):
     instances = defaultdict(lambda: {'tasks': []})
@@ -88,7 +99,7 @@ app = Flask(__name__, static_url_path='')
 @app.route('/cluster/<cluster_name>/', methods=['GET', 'POST'])
 def overview(cluster_name):
 
-    cluster = get_cluster(cluster_name)
+    # cluster = get_cluster(cluster_name)
 
     instances, families = get_cluster_overview(cluster_name)
     return render_template('overview.html', instances=instances, families=families,
@@ -103,9 +114,8 @@ def overview(cluster_name):
 
 @app.route('/')
 def index():
-    clusters = create_clusters()
-    clust = {cluster: clusters[cluster].name for cluster in clusters}
-    return render_template('index.html', clusters=clust)
+    cluster_list = create_clusters().values()
+    return render_template('index.html', clusters=cluster_list)
 
 
 @app.route('/static/<path:path>')
@@ -114,6 +124,6 @@ def send_staticfles(path):
 
 
 if __name__ == '__main__':
-    clusters = create_clusters()
-    cluster_details(clusters.keys()[0])
+    # clusters = create_clusters()
+    # cluster_details(clusters.keys()[0])
     app.run(debug=True)

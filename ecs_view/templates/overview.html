@@ -53,9 +53,24 @@
 
                 <span class="action" onclick="ssh('{{instance.ec2Instance.private_ip_address}}')">ssh</span>
 
-                <br>
-                <div class="chart">CPU: <div class="bar">text</div></div>
-                <div class="chart">MEM: <div class="bar">text</div></div>
+                <table class="chart">
+                    <tr>
+                        <td>cpu</td>
+                        <td>2048</td>
+                        <td  class="bar_td">
+                            <div class="resource_bar" style="width:70%">70%</div>
+                        </td>
+                        <td>1234</td>
+                    </tr>
+                    <tr>
+                        <td>mem</td>
+                        <td>1024</td>
+                        <td  class="bar_td">
+                            <div class="resource_bar" style="width:40%">40%</div>
+                        </td>
+                        <td class="resource_remaining">502</td>
+                    </tr>
+                </table>
 
                 {% for task in instance.tasks %}
                 <div class='task'>
