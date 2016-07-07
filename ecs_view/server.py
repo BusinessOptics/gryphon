@@ -14,7 +14,7 @@ from collections import defaultdict
 from datetime import datetime
 import json
 import functools
-
+from setup_classes import create_clusters, cluster_details
 from flask import Flask, request, render_template, send_from_directory
 
 
@@ -87,6 +87,9 @@ app = Flask(__name__, static_url_path='')
 
 @app.route('/cluster/<cluster_name>/', methods=['GET', 'POST'])
 def overview(cluster_name):
+
+    cluster = get_cluster(cluster_name)
+
     instances, families = get_cluster_overview(cluster_name)
     return render_template('overview.html', instances=instances, families=families,
                            cluster_name=cluster_name)
