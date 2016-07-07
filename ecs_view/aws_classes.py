@@ -16,9 +16,10 @@ class Task:
 
 
 class Instance:
-    def __init__(self, inst_id, container_instance_arn, auto_scaling_group, life_cycle_state, cluster, tasks):
+    def __init__(self, inst_id, container_instance_arn, name, auto_scaling_group, life_cycle_state, cluster, tasks):
         self.id = inst_id
         self.container_instance_arn = container_instance_arn
+        self.name = name
         self.auto_scaling_group = auto_scaling_group
         self.life_cycle_state = life_cycle_state
         self.cluster = cluster
@@ -33,7 +34,8 @@ class Container:
 
 
 class TaskDefinition:
-    def __init__(self, arn, family, tasks):
+    def __init__(self, arn, family, revision, tasks):
         self.arn = arn
         self.family = family
+        self.revision = revision
         self.tasks = tasks
