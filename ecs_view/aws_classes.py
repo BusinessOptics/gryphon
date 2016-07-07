@@ -71,6 +71,7 @@ class Cluster:
             task_def_info = get_task_definition(task_def_arn)
             task_def_arn = task_def_info['taskDefinitionArn']
             task_defs[task_def_arn] = TaskDefinition(arn=task_def_arn,
+                                                     family=task_def_info['family'],
                                                      revision=task_def_info['revision'],
                                                      tasks=child_task_arns)
             families[task_def_info['family']].append(task_defs[task_def_arn])
@@ -96,7 +97,7 @@ class Cluster:
         for instance in ec2_instances.values():
             ec2_id = instance.instance_id
             ci_arn = ec2_id_to_ci[ec2_id]['containerInstanceArn']
-            tags = {val['Key']:val['Value'] for val in ec2_instances[ec2_id].tags}
+            tags = {key:value for key, value in ec2_instances[ec2_id].tags}
             rem_resources = {}
             for resource in ec2_id_to_ci[ec2_id]['remainingResources']:
                 if resource.get('name') == 'CPU' or resource.get('name') == 'MEMORY':
