@@ -2,7 +2,7 @@
 {% block title %}{{cluster_name|title}} cluster overview{% endblock %}
 {% block scripts %}
 <script src="/static/js/picoModal.js"></script>
-  <script>
+<script>
 
   function execContainer(ip, task, containerName){
 
@@ -24,72 +24,82 @@
       content: command
     }).afterClose(function (modal) { modal.destroy(); }).show();
   }
-  </script>
+
+</script>
 {% endblock %}
 {% block body %}
-  <div class='header'>
+<div class='header'>
+    <a
+            class='action'
+            target='_blank'
+            href='https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/{{cluster_name}}/'>console</a>
     <a
       class='action'
       target='_blank'
-      href='https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/{{cluster_name}}/'>console</a>
+      href='../../'>index</a>
     <h1>{{cluster_name|title}} Cluster Overview</h1>
-  </div>
-  <div class='overview'>
+</div>
+<div class='overview'>
     <div class='instances-container'>
-      <h2>Instances</h2>
-      <div class='instances'>
-      {% for instance in instances %}
-        <div class='instance'>
-          {{instance.name}}
-          ({{instance.ec2Instance.private_ip_address}})
-          <span>{{instance.ec2Instance.instance_type}}</span>
+        <h2>Instances</h2>
+        <div class='instances'>
+            {% for instance in instances %}
+            <div class='instance'>
+                {{instance.name}}
+                ({{instance.ec2Instance.private_ip_address}})
+                <span>{{instance.ec2Instance.instance_type}}</span>
 
-          <a class="action" target='_blank' href='http://{{instance.ec2Instance.private_ip_address}}:9080'>cAdvisor</a>
+                <a class="action" target='_blank' href='http://{{instance.ec2Instance.private_ip_address}}:9080'>cAdvisor</a>
 
-          <span class="action" onclick="ssh('{{instance.ec2Instance.private_ip_address}}')">ssh</span>
+                <span class="action" onclick="ssh('{{instance.ec2Instance.private_ip_address}}')">ssh</span>
 
-          {% for task in instance.tasks %}
-            <div class='task'>
-              {{task.taskDefinition.family}} - {{task.taskDefinition.revision}}
+                <br>
+                <div class="chart">CPU: <div class="bar">text</div></div>
+                <div class="chart">MEM: <div class="bar">text</div></div>
 
-              <ul class='container-list'>
-              {% for container in task.containers %}
-                {% if container.lastStatus %}
-                <li >
-                  {{container.name}}
-                  <span class="action" onclick="execContainer('{{instance.ec2Instance.private_ip_address}}','{{task.taskArn}}', '{{container.name}}')">exec</span>
-                </li>
-                {% endif %}
-              {% endfor %}
-              </ul>
+                {% for task in instance.tasks %}
+                <div class='task'>
+                    {{task.taskDefinition.family}} - {{task.taskDefinition.revision}}
+
+                    <ul class='container-list'>
+                        {% for container in task.containers %}
+                        {% if container.lastStatus %}
+                        <li>
+                            {{container.name}}
+                            <span class="action"
+                                  onclick="execContainer('{{instance.ec2Instance.private_ip_address}}','{{task.taskArn}}', '{{container.name}}')">exec</span>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endfor %}
             </div>
-          {% endfor %}
+            {% endfor %}
         </div>
-      {% endfor %}
-      </div>
     </div>
 
     <div class='families'>
-      <h2>Task families</h2>
-      {% for family in families %}
-      <div class='family'>
-      {{family.0}}
-      {% for task in family.1 %}
-        <div class='task'>
+        <h2>Task families</h2>
+        {% for family in families %}
+        <div class='family'>
+            {{family.0}}
+            {% for task in family.1 %}
+            <div class='task'>
 
-          {{task.taskDefinition.family}} - {{task.taskDefinition.revision}}
+                {{task.taskDefinition.family}} - {{task.taskDefinition.revision}}
 
-          <ul class='container-list'>
-          {% for container in task.containers %}
-            <li >
-              {{container.name}}
-            </li>
-          {% endfor %}
-          </ul>
+                <ul class='container-list'>
+                    {% for container in task.containers %}
+                    <li>
+                        {{container.name}}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
         </div>
-      {% endfor %}
-      </div>
-      {% endfor %}
+        {% endfor %}
     </div>
-  </div>
+</div>
 {% endblock %}

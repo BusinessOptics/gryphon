@@ -5,6 +5,14 @@ body {
     margin: 0px;
 }
 
+a {
+    color: #75b348;
+    text-decoration: none;
+}
+
+h2 {
+    margin: 0px 0px 0.25em;
+}
 
 .header {
     background-color: hsl(0, 0%, 20%);
@@ -20,15 +28,19 @@ body {
 .overview {
     display: flex;
     justify-content: space-between;
+    border: 1px solid #bbb;
+    margin: 1em;
 }
 
 .instances-container {
     padding: 1em;
     padding-right: 0px;
+    padding-bottom: 0em;
 }
 
 .families {
     padding: 1em;
+    padding-bottom: 0em;
     min-width:250px;
     border-left: 1px solid #bbb;
 }
@@ -98,4 +110,52 @@ ul.container-list li {
     background: #f7f7f7;
     margin: 3px 0px;
     border: 1px solid #75b348;
+}
+
+.cluster-list {
+    padding: 1em;
+    display: inline-block;
+    margin: 1em;
+    border: 1px solid #bbb;
+    background: #f7f7f7;
+}
+
+.cluster-list ul {
+    list-style: none;
+    padding: 0px;
+    margin: 0.25em;
+
+}
+
+.cluster-list ul li{
+    margin-bottom: 0.25em;
+    border: 1px solid #bbb;
+    padding: 0.1em;
+    text-align: center;
+    background: #75b348;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.cluster-list ul li a {
+    color: white;
+    display: block;
+    cursor: pointer;
+}
+
+.cluster-list ul li:hover {
+    background-color: rgb(170, 210, 141);
+    border: 1px solid #75b348;
+}
+
+.chart {
+    padding: 2px;
+}
+
+.bar {
+    background: #75b348;
+    display: inline-block;
+    padding: 2px;
+    margin: 1px;
+    align: center;
 }
