@@ -71,7 +71,6 @@ class Cluster:
             task_def_info = get_task_definition(task_def_arn)
             task_def_arn = task_def_info['taskDefinitionArn']
             task_defs[task_def_arn] = TaskDefinition(arn=task_def_arn,
-                                                     family=task_def_info['family'],
                                                      revision=task_def_info['revision'],
                                                      tasks=child_task_arns)
             families[task_def_info['family']].append(task_defs[task_def_arn])
@@ -80,6 +79,7 @@ class Cluster:
 
         for name, task_defs in families.items():
             task_families[name] = TaskFamily(name=name, task_defs=task_defs)
+            task_defs.family = task_families[name]
 
         container_instances = ecs.describe_container_instances(cluster=self.name,
                                                                containerInstances=cont_inst_arn.keys()
@@ -95,7 +95,7 @@ class Cluster:
         for instance in ec2_instances.values():
             ec2_id = instance.instance_id
             ci_arn = ec2_id_to_ci[ec2_id]['containerInstanceArn']
-            tags = {key:value for key, value in ec2_instances[ec2_id].tags}
+            tags = {val['Key']:val['Value'] for val in ec2_instances[ec2_id].tags}
             rem_resources = {}
             for resource in ec2_id_to_ci[ec2_id]['remainingResources']:
                 if resource.get('name') == 'CPU' or resource.get('name') == 'MEMORY':
@@ -125,10 +125,10 @@ class Cluster:
                 tasks=task_list,
                 ip=ec2_instances[ec2_id].private_ip_address,
                 type=ec2_instances[ec2_id].instance_type,
-                CPU=reg_resources.get('CPU'),
-                CPUrem=rem_resources.get('CPU'),
-                MEM=reg_resources.get('MEMORY'),
-                MEMrem=rem_resources.get('MEMORY'))  # Needs list of task arns
+                cpu=reg_resources.get('CPU'),
+                cpu_rem=rem_resources.get('CPU'),
+                mem=reg_resources.get('MEMORY'),
+                mem_rem=rem_resources.get('MEMORY'))  # Needs list of task arns
         for inst in instances.values():
             for task in inst.tasks:
                 task.instance = inst
@@ -150,8 +150,8 @@ class Task:
 class Instance:
     def __init__(self, inst_id=None, container_instance_arn=None, name=None,
                  auto_scaling_group=None,
-                 ip=None, type=None, life_cycle_state=None, cluster=None, tasks=None, CPU=None,
-                 CPUrem=None, MEM=None, MEMrem=None):
+                 ip=None, type=None, life_cycle_state=None, cluster=None, tasks=None, cpu=None,
+                 cpu_rem=None, mem=None, mem_rem=None):
         self.id = inst_id
         self.container_instance_arn = container_instance_arn
         self.name = name
@@ -161,10 +161,26 @@ class Instance:
         self.life_cycle_state = life_cycle_state
         self.cluster = cluster
         self.tasks = tasks
-        self.CPU = CPU
-        self.CPUrem = CPUrem
-        self.MEM = MEM
-        self.MEMrem = MEMrem
+        self.CPU = cpu
+        self.CPUrem = cpu_rem
+        self.MEM = mem
+        self.MEMrem = mem_rem
+
+    @property
+    def cpu_perc(self):
+        return (self.cpu_used/self.cpu)*100
+
+    @property
+    def cpu_perc(self):
+        return (self.mem_used / self.mem) * 100
+
+    @property
+    def cpu_used(self):
+        return self.CPU - self.CPUrem
+
+    @property
+    def mem_used(self):
+        return self.MEM - self.MEMrem
 
     def __str__(self):
         return str(self.id)+" "+str(self.name)+" "+str(self.CPU)
