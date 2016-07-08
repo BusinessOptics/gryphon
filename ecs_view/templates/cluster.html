@@ -41,7 +41,11 @@
         var diffHours = Math.floor((dat)/(oneDay/24)-diffDays*24);
         var diffMins = Math.floor((dat)/(60000)-diffHours*60-diffDays*24*60);
         var diffSecs = Math.floor((dat)/(1000)-diffMins*60-diffHours*60*60-diffDays*24*60*60);
-        return diffDays+'d '+diffHours+':'+diffMins+':'+diffSecs;
+        return diffDays+'d '+timePad(diffHours)+':'+timePad(diffMins)+':'+timePad(diffSecs);
+    }
+
+    function timePad(t){
+        return String("00" + t).slice(-2)
     }
 
 </script>
