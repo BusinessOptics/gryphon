@@ -117,20 +117,34 @@ class Cluster:
                     elif resource.get('type') == 'LONG':
                         reg_resources[resource.get('name')] = resource.get('longValue')
             task_list = [tasks[task_arn] for task_arn in cont_inst_arn[ci_arn]]
-            instances[ec2_id] = Instance(
-                inst_id=ec2_id,
-                name=tags.get('Name'),
-                container_instance_arn=ci_arn,
-                auto_scaling_group=auto_instances.get(ec2_id)['AutoScalingGroupName'],
-                life_cycle_state=auto_instances.get(ec2_id)['LifecycleState'],
-                cluster=self,
-                tasks=sorted(task_list, key=lambda x: x.definition.family.name),
-                ip=ec2_instances[ec2_id].private_ip_address,
-                type=ec2_instances[ec2_id].instance_type,
-                cpu=reg_resources.get('CPU'),
-                cpu_rem=rem_resources.get('CPU'),
-                mem=reg_resources.get('MEMORY'),
-                mem_rem=rem_resources.get('MEMORY'))  # Needs list of task arns
+            if auto_instances.get(ec2_id):
+                instances[ec2_id] = Instance(
+                    inst_id=ec2_id,
+                    name=tags.get('Name'),
+                    container_instance_arn=ci_arn,
+                    auto_scaling_group=auto_instances.get(ec2_id)['AutoScalingGroupName'],
+                    life_cycle_state=auto_instances.get(ec2_id)['LifecycleState'],
+                    cluster=self,
+                    tasks=sorted(task_list, key=lambda x: x.definition.family.name),
+                    ip=ec2_instances[ec2_id].private_ip_address,
+                    type=ec2_instances[ec2_id].instance_type,
+                    cpu=reg_resources.get('CPU'),
+                    cpu_rem=rem_resources.get('CPU'),
+                    mem=reg_resources.get('MEMORY'),
+                    mem_rem=rem_resources.get('MEMORY'))
+            else:
+                instances[ec2_id] = Instance(
+                    inst_id=ec2_id,
+                    name=tags.get('Name'),
+                    container_instance_arn=ci_arn,
+                    cluster=self,
+                    tasks=sorted(task_list, key=lambda x: x.definition.family.name),
+                    ip=ec2_instances[ec2_id].private_ip_address,
+                    type=ec2_instances[ec2_id].instance_type,
+                    cpu=reg_resources.get('CPU'),
+                    cpu_rem=rem_resources.get('CPU'),
+                    mem=reg_resources.get('MEMORY'),
+                    mem_rem=rem_resources.get('MEMORY'))  # Needs list of task arns
         for inst in instances.values():
             for task in inst.tasks:
                 task.instance = inst
