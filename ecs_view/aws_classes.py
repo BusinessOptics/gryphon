@@ -43,6 +43,7 @@ class Cluster:
         containers = {}
         task_defs = {}
         task_families = {}
+        container_defs = {}
         task_keys = ecs.list_tasks(cluster=self.name)['taskArns']
 
         if not task_keys:
@@ -67,6 +68,7 @@ class Cluster:
                 conts.append(containers[container_arn])
             tasks[task_arn].containers = conts
         families = defaultdict(list)
+        cont_defs_by_task_defs = defaultdict(list)
         for task_def_arn, child_task_arns in task_dict.items():
             task_def_info = get_task_definition(task_def_arn)
             task_def_arn = task_def_info['taskDefinitionArn']
@@ -77,16 +79,31 @@ class Cluster:
             families[task_def_info['family']].append(task_defs[task_def_arn])
             for task in task_defs[task_def_arn].tasks:
                 task.definition = task_defs[task_def_arn]
-
+            for cont_def in task_def_info['containerDefinitions']:
+                container_def_name = cont_def['name']
+                environments = {env['name']: env['value'] for env in cont_def['environment']}
+                containers = [cont for cont in containers.values() if
+                              cont.name == container_def_name]
+                temp_container = ContainerDefinition(name=container_def_name,
+                                                     image=cont_def['image'],
+                                                     task_definition=task_defs[task_def_arn],
+                                                     environments=environments,
+                                                     containers=containers)
+                container_defs[container_def_name] = temp_container
+                cont_defs_by_task_defs[task_def_arn].append(temp_container)
+                for cont in containers:
+                    cont.container_def = temp_container
+        for task_def in cont_defs_by_task_defs.keys():
+            task_defs[task_def].container_defs = cont_defs_by_task_defs[task_def]
         for name, task_defs in families.items():
             task_families[name] = TaskFamily(name=name, task_defs=task_defs)
             for task_def in task_defs:
                 task_def.family = task_families[name]
 
         container_instances = ecs.describe_container_instances(
-                                        cluster=self.name,
-                                        containerInstances=list(cont_inst_arn.keys())
-                                      )['containerInstances']
+            cluster=self.name,
+            containerInstances=list(cont_inst_arn.keys())
+        )['containerInstances']
         ec2_id_to_ci = {}
         for container in container_instances:
             ec2_id_to_ci[container['ec2InstanceId']] = container
@@ -205,15 +222,16 @@ class Instance:
         return self.mem - self.mem_rem
 
     def __str__(self):
-        return str(self.id)+" "+str(self.name)
+        return str(self.id) + " " + str(self.name)
 
 
 class Container:
-    def __init__(self, arn=None, name=None, task=None, status=None):
+    def __init__(self, arn=None, name=None, task=None, status=None, container_def=None):
         self.arn = arn
         self.name = name
         self.task = task
         self.status = status
+        self.container_def = container_def
 
 
 class TaskFamily:
@@ -223,8 +241,19 @@ class TaskFamily:
 
 
 class TaskDefinition:
-    def __init__(self, arn=None, family=None, revision=None, tasks=None):
+    def __init__(self, arn=None, family=None, revision=None, tasks=None, container_defs=None):
         self.arn = arn
         self.family = family
         self.revision = revision
         self.tasks = tasks
+        self.container_defs = container_defs
+
+
+class ContainerDefinition:
+    def __init__(self, name=None, image=None, task_definition=None, containers=None,
+                 environments=None):
+        self.name = name
+        self.image = image
+        self.task_definition = task_definition
+        self.containers = containers
+        self.environments = environments
