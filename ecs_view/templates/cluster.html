@@ -138,10 +138,9 @@
                         {% if container.status %}
                         <li>
                             {{container.name}}
-                            {{container.container_def.environments | tojson | safe}}
                             <span class="action"
-                                  onclick="run('{{container.container_def.image}}',
-                                                {{container.container_def.environments | tojson | safe}})">run</span>
+                                  onclick='run("{{container.container_def.image}}",
+                                                {{container.container_def.environments | tojson | safe}})'>run</span>
                             <span class="action"
                                   onclick="execContainer('{{instance.ip}}','{{task.arn}}', '{{container.name}}')">exec</span>
                         </li>
