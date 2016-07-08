@@ -22,7 +22,7 @@ def create_clusters():
     return clusters
 
 
-#@functools.lru_cache(maxsize=None)
+@functools.lru_cache(maxsize=None)
 def get_task_definition(arn):
     return ecs.describe_task_definition(
         taskDefinition=arn
