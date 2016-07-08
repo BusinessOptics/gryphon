@@ -8,7 +8,6 @@ ec2 = boto3.resource('ec2')
 auto_scaling = boto3.client('autoscaling')
 
 
-
 def create_clusters():
     clusters = []
     cluster_keys = ecs.list_clusters()['clusterArns']
@@ -21,7 +20,7 @@ def create_clusters():
     return clusters
 
 
-#@functools.lru_cache(maxsize=None)
+@functools.lru_cache(maxsize=None)
 def get_task_definition(arn):
     return ecs.describe_task_definition(
         taskDefinition=arn
