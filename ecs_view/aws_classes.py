@@ -6,11 +6,10 @@ boto3.setup_default_session(region_name='us-east-1')
 ecs = boto3.client('ecs')
 ec2 = boto3.resource('ec2')
 auto_scaling = boto3.client('autoscaling')
-insts = ec2.instances.filter(
-    Filters=[{'Name': 'instance-state-name', 'Values': ['running']}])
 
 
 # change to create_clusters
+
 def create_clusters():
     clusters = []
     cluster_keys = ecs.list_clusters()['clusterArns']
@@ -100,7 +99,7 @@ class Cluster:
         for instance in ec2_instances.values():
             ec2_id = instance.instance_id
             ci_arn = ec2_id_to_ci[ec2_id]['containerInstanceArn']
-            tags = {value['Key']: value['Value'] for value in ec2_instances[ec2_id].tags}
+            tags = {value['Key']: value['Value'] for value in instance.tags}
             rem_resources = {}
             for resource in ec2_id_to_ci[ec2_id]['remainingResources']:
                 if resource.get('name') == 'CPU' or resource.get('name') == 'MEMORY':
@@ -130,8 +129,8 @@ class Cluster:
                     life_cycle_state=auto_instances.get(ec2_id)['LifecycleState'],
                     cluster=self,
                     tasks=sorted(task_list, key=lambda x: x.definition.family.name),
-                    ip=ec2_instances[ec2_id].private_ip_address,
-                    type=ec2_instances[ec2_id].instance_type,
+                    ip=instance.private_ip_address,
+                    type=instance.instance_type,
                     cpu=reg_resources.get('CPU'),
                     cpu_rem=rem_resources.get('CPU'),
                     mem=reg_resources.get('MEMORY'),
@@ -144,8 +143,8 @@ class Cluster:
                     container_instance_arn=ci_arn,
                     cluster=self,
                     tasks=sorted(task_list, key=lambda x: x.definition.family.name),
-                    ip=ec2_instances[ec2_id].private_ip_address,
-                    type=ec2_instances[ec2_id].instance_type,
+                    ip=instance.private_ip_address,
+                    type=instance.instance_type,
                     cpu=reg_resources.get('CPU'),
                     cpu_rem=rem_resources.get('CPU'),
                     mem=reg_resources.get('MEMORY'),
