@@ -165,11 +165,15 @@ ul.container-list li {
 }
 
 .bar_td {
-    width: 99%;
     padding: 0px;
     padding-left: 2px;
 }
 
-.resource_remaining {
-    text-align: right;
+.resource_name {
+  width: 2em;
+}
+
+.resource_remaining, .resource_used {
+  text-align: right;
+  width: 4em;
 }
