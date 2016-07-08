@@ -8,7 +8,6 @@ ec2 = boto3.resource('ec2')
 auto_scaling = boto3.client('autoscaling')
 
 
-# change to create_clusters
 
 def create_clusters():
     clusters = []
@@ -22,7 +21,7 @@ def create_clusters():
     return clusters
 
 
-@functools.lru_cache(maxsize=None)
+#@functools.lru_cache(maxsize=None)
 def get_task_definition(arn):
     return ecs.describe_task_definition(
         taskDefinition=arn
@@ -82,16 +81,16 @@ class Cluster:
             for cont_def in task_def_info['containerDefinitions']:
                 container_def_name = cont_def['name']
                 environments = {env['name']: env['value'] for env in cont_def['environment']}
-                containers = [cont for cont in containers.values() if
+                conts = [cont for cont in containers.values() if
                               cont.name == container_def_name]
                 temp_container = ContainerDefinition(name=container_def_name,
                                                      image=cont_def['image'],
                                                      task_definition=task_defs[task_def_arn],
                                                      environments=environments,
-                                                     containers=containers)
+                                                     containers=conts)
                 container_defs[container_def_name] = temp_container
                 cont_defs_by_task_defs[task_def_arn].append(temp_container)
-                for cont in containers:
+                for cont in conts:
                     cont.container_def = temp_container
         for task_def in cont_defs_by_task_defs.keys():
             task_defs[task_def].container_defs = cont_defs_by_task_defs[task_def]
