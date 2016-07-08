@@ -6,9 +6,6 @@ boto3.setup_default_session(region_name='us-east-1')
 ecs = boto3.client('ecs')
 ec2 = boto3.resource('ec2')
 auto_scaling = boto3.client('autoscaling')
-insts = ec2.instances.filter(
-    Filters=[{'Name': 'instance-state-name', 'Values': ['running']}])
-
 
 # change to create_clusters
 def create_clusters():
@@ -23,7 +20,7 @@ def create_clusters():
     return clusters
 
 
-@functools.lru_cache(maxsize=None)
+# @functools.lru_cache(maxsize=None)
 def get_task_definition(arn):
     return ecs.describe_task_definition(
         taskDefinition=arn
