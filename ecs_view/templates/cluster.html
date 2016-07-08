@@ -4,26 +4,45 @@
 <script src="/static/js/picoModal.js"></script>
 <script>
 
-  function execContainer(ip, task, containerName){
+    function execContainer(ip, task, containerName){
 
     var command = 'containerName="'+containerName+'";\n' +
-      'taskArn=' + task + ';\n' +
-      'dockerCommand="CONTAINER_ID=\\`curl http://localhost:51678/v1/tasks?taskarn=\${taskArn} | jq -r \'.Containers[] | select(.Name=\\"\${containerName}\\").DockerId\'\\`; sudo docker exec -it -u root \\${CONTAINER_ID} bash";\n' +
-      'ssh -i ~/.ssh/default.pem core@' + ip + ' -t "set -ex; $dockerCommand"\n'
+        'taskArn=' + task + ';\n' +
+        'dockerCommand="CONTAINER_ID=\\`curl http://localhost:51678/v1/tasks?taskarn=\${taskArn} | jq -r \'.Containers[] | select(.Name=\\"\${containerName}\\").DockerId\'\\`; sudo docker exec -it -u root \\${CONTAINER_ID} bash";\n' +
+        'ssh -i ~/.ssh/default.pem core@' + ip + ' -t "set -ex; $dockerCommand"\n'
 
     picoModal({
-      content: '<pre><textarea style="width:100%; height:10em;">'+command+'</textarea></pre>',
-      width: '50%'
+        content: '<pre><textarea style="width:100%; height:10em;">'+command+'</textarea></pre>',
+        width: '50%'
     }).afterClose(function (modal) { modal.destroy(); }).show();
 
-  }
+    }
 
-  function ssh(ip){
-    var command = "ssh " + ip;
-    picoModal({
-      content: command
-    }).afterClose(function (modal) { modal.destroy(); }).show();
-  }
+    function ssh(ip){
+        var command = "ssh " + ip;
+        picoModal({
+            content: command
+        }).afterClose(function (modal) { modal.destroy(); }).show();
+    }
+
+    function setTime(d, elem) {
+        var id = setInterval(frame, 100);
+        function frame() {
+            elem.innerHTML = 'uptime: '+getTime(d)
+        }
+    }
+
+    function getTime(d){
+        var oneDay = 24*60*60*1000;	// hours*minutes*seconds*milliseconds
+        var epoch = new Date();
+        var dat = epoch-d;
+
+        var diffDays = Math.floor((dat)/(oneDay));
+        var diffHours = Math.floor((dat)/(oneDay/24)-diffDays*24);
+        var diffMins = Math.floor((dat)/(60000)-diffHours*60-diffDays*24*60);
+        var diffSecs = Math.floor((dat)/(1000)-diffMins*60-diffHours*60*60-diffDays*24*60*60);
+        return diffDays+'d '+diffHours+':'+diffMins+':'+diffSecs;
+    }
 
 </script>
 {% endblock %}
@@ -76,6 +95,20 @@
                         <td class="resource_remaining">{{ instance.mem_rem }}</td>
                     </tr>
                 </table>
+
+                <div class="uptime">
+                    <p  class="time" id="time-{{instance.id}}"></p>
+                    <script>
+                        var launch = new Date({{instance.launch_time.year}},
+                                         {{instance.launch_time.month}}-1,
+                                         {{instance.launch_time.day}},
+                                         {{instance.launch_time.hour}},
+                                         {{instance.launch_time.minute}},
+                                         {{instance.launch_time.second}});
+                        setTime(launch, document.getElementById("time-{{instance.id}}"));
+                    </script>
+                </div>
+
                 {% for task in instance.tasks %}
                 <div class='task'>
                     {{task.definition.family.name}} - {{task.definition.revision}}

@@ -118,6 +118,7 @@ class Cluster:
                         reg_resources[resource.get('name')] = resource.get('longValue')
             task_list = [tasks[task_arn] for task_arn in cont_inst_arn[ci_arn]]
             launch_time = instance.launch_time
+            print launch_time
             if auto_instances.get(ec2_id):
                 instances[ec2_id] = Instance(
                     inst_id=ec2_id,
