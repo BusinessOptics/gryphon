@@ -10,12 +10,8 @@ Monitored/Celery Tasks
 Current State
 """
 
-from collections import defaultdict
-from datetime import datetime
-import json
-import functools
 from aws_classes import *
-from flask import Flask, request, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory
 
 app = Flask(__name__, static_url_path='')
 
