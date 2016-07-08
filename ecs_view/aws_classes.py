@@ -93,9 +93,9 @@ class Cluster:
 
         auto_instances = {auto_inst['InstanceId']: auto_inst for auto_inst in
                           auto_scaling.describe_auto_scaling_instances(
-                              InstanceIds=ec2_id_to_ci.keys())['AutoScalingInstances']}
+                              InstanceIds=list(ec2_id_to_ci.keys()))['AutoScalingInstances']}
         ec2_instances = {inst.instance_id: inst for inst in
-                         ec2.instances.filter(InstanceIds=ec2_id_to_ci.keys())}
+                         ec2.instances.filter(InstanceIds=list(ec2_id_to_ci.keys()))}
         for instance in ec2_instances.values():
             ec2_id = instance.instance_id
             ci_arn = ec2_id_to_ci[ec2_id]['containerInstanceArn']
