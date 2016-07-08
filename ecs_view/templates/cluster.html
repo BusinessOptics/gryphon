@@ -130,24 +130,7 @@
                 </div>
 
                 {% for task in instance.tasks %}
-                <div class='task'>
-                    {{task.definition.family.name}} - {{task.definition.revision}}
-
-                    <ul class='container-list'>
-                        {% for container in task.containers %}
-                        {% if container.status %}
-                        <li>
-                            {{container.name}}
-                            <span class="action"
-                                  onclick='run("{{container.container_def.image}}",
-                                                {{container.container_def.environments | tojson | safe}})'>run</span>
-                            <span class="action"
-                                  onclick="execContainer('{{instance.ip}}','{{task.arn}}', '{{container.name}}')">exec</span>
-                        </li>
-                        {% endif %}
-                        {% endfor %}
-                    </ul>
-                </div>
+                    {% include "task.html" %}
                 {% endfor %}
             </div>
             {% endfor %}
@@ -161,27 +144,9 @@
         <div class='family'>
             {{family.name}}
             {% for task_def in family.task_defs %}
-            {% for task in task_def.tasks %}
-            <div class='task'>
-
-                {{task.definition.family.name}} - {{task.definition.revision}}
-
-                <ul class='container-list'>
-                    {% for container in task.containers %}
-                    {% if container.status %}
-                    <li>
-                        {{container.name}}
-                        <span class="action"
-                              onclick='run("{{container.container_def.image}}",
-                                            {{container.container_def.environments | tojson | safe}})'>run</span>
-                        <span class="action"
-                              onclick="execContainer('{{task.instance.ip}}','{{task.arn}}', '{{container.name}}')">exec</span>
-                    </li>
-                    {% endif %}
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endfor %}
+                {% for task in task_def.tasks %}
+                    {% include "task.html" %}
+                {% endfor %}
             {% endfor %}
         </div>
         {% endfor %}

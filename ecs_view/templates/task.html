@@ -1,0 +1,18 @@
+<div class='task'>
+    {{task.definition.family.name}} - {{task.definition.revision}}
+
+    <ul class='container-list'>
+        {% for container in task.containers %}
+        {% if container.status %}
+        <li>
+            {{container.name}}
+            <span class="action"
+                  onclick='run("{{container.container_def.image}}",
+                                {{container.container_def.environments | tojson | safe}})'>run</span>
+            <span class="action"
+                  onclick="execContainer('{{task.instance.ip}}','{{task.arn}}', '{{container.name}}')">exec</span>
+        </li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+</div>
