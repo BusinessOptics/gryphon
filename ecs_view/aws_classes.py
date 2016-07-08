@@ -83,9 +83,10 @@ class Cluster:
             for task_def in task_defs:
                 task_def.family = task_families[name]
 
-        container_instances = ecs.describe_container_instances(cluster=self.name,
-                                                               containerInstances=cont_inst_arn.keys()
-                                                               )['containerInstances']
+        container_instances = ecs.describe_container_instances(
+                                        cluster=self.name,
+                                        containerInstances=list(cont_inst_arn.keys())
+                                      )['containerInstances']
         ec2_id_to_ci = {}
         for container in container_instances:
             ec2_id_to_ci[container['ec2InstanceId']] = container
@@ -204,7 +205,7 @@ class Instance:
         return self.mem - self.mem_rem
 
     def __str__(self):
-        return str(self.id) + " " + str(self.name)
+        return str(self.id)+" "+str(self.name)
 
 
 class Container:
