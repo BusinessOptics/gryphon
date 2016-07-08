@@ -35,7 +35,7 @@
         var command = "docker run -it -u root " + envVariables + image_name + " bash";
 
         picoModal({
-            content: '<pre><textarea style="width:100%; height:2em;">'+command+'</textarea></pre>',
+            content: '<pre><textarea style="width:100%; height:10em;">'+command+'</textarea></pre>',
             width: '50%'
         }).afterClose(function (modal) { modal.destroy(); }).show();
     }
@@ -138,6 +138,7 @@
                         {% if container.status %}
                         <li>
                             {{container.name}}
+                            {{container.container_def.environments | tojson | safe}}
                             <span class="action"
                                   onclick="run('{{container.container_def.image}}',
                                                 {{container.container_def.environments | tojson | safe}})">run</span>
