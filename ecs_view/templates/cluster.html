@@ -26,6 +26,20 @@
         }).afterClose(function (modal) { modal.destroy(); }).show();
     }
 
+    function run(image_name, env){
+        envVariables = "";
+        Object.keys(env).forEach(function(key,index) {
+            envVariables = envVariables + "-e " + key + "=" + env[key] + " ";
+        });
+
+        var command = "docker run -it -u root " + envVariables + image_name + " bash";
+
+        picoModal({
+            content: '<pre><textarea style="width:100%; height:2em;">'+command+'</textarea></pre>',
+            width: '50%'
+        }).afterClose(function (modal) { modal.destroy(); }).show();
+    }
+
     function setTime(d, elem) {
         var id = setInterval(frame, 100);
         function frame() {
@@ -124,6 +138,9 @@
                         {% if container.status %}
                         <li>
                             {{container.name}}
+                            <span class="action"
+                                  onclick="run('{{container.container_def.image}}',
+                                                {{container.container_def.environments | tojson | safe}})">run</span>
                             <span class="action"
                                   onclick="execContainer('{{instance.ip}}','{{task.arn}}', '{{container.name}}')">exec</span>
                         </li>
