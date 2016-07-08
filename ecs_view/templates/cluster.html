@@ -95,24 +95,24 @@
 
                 <table class="chart">
                     <tr>
-                        <td>cpu</td>
-                        <td>{{ instance.cpu_used }}</td>
+                        <td class="chart_col">cpu</td>
+                        <td class="resource_used chart_col">{{ instance.cpu_used }}</td>
                         <td class="bar_td">
                             <div class="resource_bar" style="width:{{instance.cpu_perc}}%">
                                 {{instance.cpu_perc | round | int}}%
                             </div>
                         </td>
-                        <td>{{ instance.cpu_rem }}</td>
+                        <td class="resource_remaining chart_col">{{ instance.cpu_rem }}</td>
                     </tr>
                     <tr>
-                        <td>mem</td>
-                        <td>{{ instance.mem_used }}</td>
+                        <td class="chart_col">mem</td>
+                        <td class="resource_used chart_col">{{ instance.mem_used }}</td>
                         <td class="bar_td">
                             <div class="resource_bar" style="width:{{instance.mem_perc}}%">
                                 {{instance.mem_perc | round | int}}%
                             </div>
                         </td>
-                        <td class="resource_remaining">{{ instance.mem_rem }}</td>
+                        <td class="resource_remaining chart_col">{{ instance.mem_rem }}</td>
                     </tr>
                 </table>
 
