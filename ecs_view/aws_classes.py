@@ -89,15 +89,15 @@ class Cluster:
         for container in container_instances:
             ec2_id_to_ci[container['ec2InstanceId']] = container
 
-        auto_instances = {auto_inst['InstanceId']:auto_inst for auto_inst in auto_scaling.describe_auto_scaling_instances(
-            InstanceIds= list(ec2_id_to_ci.keys()))['AutoScalingInstances']}
+        auto_instances = {auto_inst['InstanceId']: auto_inst for auto_inst in
+                          auto_scaling.describe_auto_scaling_instances(
+                              InstanceIds=ec2_id_to_ci.keys())['AutoScalingInstances']}
         ec2_instances = {inst.instance_id: inst for inst in
-                         ec2.instances.filter(InstanceIds= list(ec2_id_to_ci.keys()))}
-
+                         ec2.instances.filter(InstanceIds=ec2_id_to_ci.keys())}
         for instance in ec2_instances.values():
             ec2_id = instance.instance_id
             ci_arn = ec2_id_to_ci[ec2_id]['containerInstanceArn']
-            tags = {value['Key']:value['Value'] for value in ec2_instances[ec2_id].tags}
+            tags = {value['Key']: value['Value'] for value in ec2_instances[ec2_id].tags}
             rem_resources = {}
             for resource in ec2_id_to_ci[ec2_id]['remainingResources']:
                 if resource.get('name') == 'CPU' or resource.get('name') == 'MEMORY':
@@ -117,20 +117,37 @@ class Cluster:
                     elif resource.get('type') == 'LONG':
                         reg_resources[resource.get('name')] = resource.get('longValue')
             task_list = [tasks[task_arn] for task_arn in cont_inst_arn[ci_arn]]
-            instances[ec2_id] = Instance(
-                inst_id=ec2_id,
-                name=tags.get('Name'),
-                container_instance_arn=ci_arn,
-                auto_scaling_group=auto_instances.get(ec2_id)['AutoScalingGroupName'],
-                life_cycle_state=auto_instances.get(ec2_id)['LifecycleState'],
-                cluster=self,
-                tasks=sorted(task_list, key=lambda x: x.definition.family.name),
-                ip=ec2_instances[ec2_id].private_ip_address,
-                type=ec2_instances[ec2_id].instance_type,
-                cpu=reg_resources.get('CPU'),
-                cpu_rem=rem_resources.get('CPU'),
-                mem=reg_resources.get('MEMORY'),
-                mem_rem=rem_resources.get('MEMORY'))  # Needs list of task arns
+            launch_time = instance.launch_time
+            if auto_instances.get(ec2_id):
+                instances[ec2_id] = Instance(
+                    inst_id=ec2_id,
+                    name=tags.get('Name'),
+                    container_instance_arn=ci_arn,
+                    auto_scaling_group=auto_instances.get(ec2_id)['AutoScalingGroupName'],
+                    life_cycle_state=auto_instances.get(ec2_id)['LifecycleState'],
+                    cluster=self,
+                    tasks=sorted(task_list, key=lambda x: x.definition.family.name),
+                    ip=ec2_instances[ec2_id].private_ip_address,
+                    type=ec2_instances[ec2_id].instance_type,
+                    cpu=reg_resources.get('CPU'),
+                    cpu_rem=rem_resources.get('CPU'),
+                    mem=reg_resources.get('MEMORY'),
+                    mem_rem=rem_resources.get('MEMORY'),
+                    launch_time=launch_time)
+            else:
+                instances[ec2_id] = Instance(
+                    inst_id=ec2_id,
+                    name=tags.get('Name'),
+                    container_instance_arn=ci_arn,
+                    cluster=self,
+                    tasks=sorted(task_list, key=lambda x: x.definition.family.name),
+                    ip=ec2_instances[ec2_id].private_ip_address,
+                    type=ec2_instances[ec2_id].instance_type,
+                    cpu=reg_resources.get('CPU'),
+                    cpu_rem=rem_resources.get('CPU'),
+                    mem=reg_resources.get('MEMORY'),
+                    mem_rem=rem_resources.get('MEMORY'),
+                    launch_time=launch_time)  # Needs list of task arns
         for inst in instances.values():
             for task in inst.tasks:
                 task.instance = inst
@@ -153,7 +170,7 @@ class Instance:
     def __init__(self, inst_id=None, container_instance_arn=None, name=None,
                  auto_scaling_group=None,
                  ip=None, type=None, life_cycle_state=None, cluster=None, tasks=None, cpu=None,
-                 cpu_rem=None, mem=None, mem_rem=None):
+                 cpu_rem=None, mem=None, mem_rem=None, launch_time=None):
         self.id = inst_id
         self.container_instance_arn = container_instance_arn
         self.name = name
@@ -167,10 +184,11 @@ class Instance:
         self.cpu_rem = cpu_rem
         self.mem = mem
         self.mem_rem = mem_rem
+        self.launch_time = launch_time
 
     @property
     def cpu_perc(self):
-        return (float(self.cpu_used)/float(self.cpu))*100
+        return (float(self.cpu_used) / float(self.cpu)) * 100
 
     @property
     def mem_perc(self):
