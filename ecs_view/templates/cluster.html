@@ -49,7 +49,9 @@
 
     function getTime(d){
         var oneDay = 24*60*60*1000;	// hours*minutes*seconds*milliseconds
-        var epoch = new Date();
+        var cur = new Date()
+        var epoch = new Date(cur.getUTCFullYear(), cur.getUTCMonth(), cur.getUTCDate(),
+                             cur.getUTCHours(), cur.getUTCMinutes(), cur.getUTCSeconds());
         var dat = epoch-d;
 
         var diffDays = Math.floor((dat)/(oneDay));
