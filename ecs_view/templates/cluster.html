@@ -68,7 +68,8 @@
         <div class='instances'>
             {% set instances = cluster.instances %}
             {% for instance in instances %}
-            <div class='instance'>
+            <div class='instance{% if instance.life_cycle_state == "Terminating:Wait" %}
+                                 terminating{% endif %}'>
                 {{instance.name}}
                 ({{instance.ip}})
                 <span>{{instance.type}}</span>

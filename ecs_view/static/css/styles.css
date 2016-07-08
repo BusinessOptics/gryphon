@@ -183,3 +183,7 @@ ul.container-list li {
     font-size: small;
     margin: 0px;
 }
+
+.terminating {
+    background-color: #F7E482;
+}
