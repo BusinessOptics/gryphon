@@ -25,6 +25,7 @@
     }).afterClose(function (modal) { modal.destroy(); }).show();
   }
 
+
 </script>
 {% endblock %}
 {% block body %}
@@ -34,9 +35,9 @@
             target='_blank'
             href='https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/{{cluster.name}}/'>console</a>
     <a
-      class='action'
-      target='_blank'
-      href='../../'>index</a>
+            class='action'
+            target='_blank'
+            href='../../'>index</a>
     <h1>{{cluster.name|title}} Cluster Overview</h1>
 </div>
 <div class='overview'>
@@ -54,11 +55,11 @@
 
                 <span class="action" onclick="ssh('{{instance.ip}}')">ssh</span>
 
-               <table class="chart">
+                <table class="chart">
                     <tr>
                         <td>cpu</td>
                         <td>{{ instance.cpu_used }}</td>
-                        <td  class="bar_td">
+                        <td class="bar_td">
                             <div class="resource_bar" style="width:{{instance.cpu_perc}}%">
                                 {{instance.cpu_perc | round | int}}%
                             </div>
@@ -68,7 +69,7 @@
                     <tr>
                         <td>mem</td>
                         <td>{{ instance.mem_used }}</td>
-                        <td  class="bar_td">
+                        <td class="bar_td">
                             <div class="resource_bar" style="width:{{instance.mem_perc}}%">
                                 {{instance.mem_perc | round | int}}%
                             </div>
@@ -105,24 +106,24 @@
         <div class='family'>
             {{family.name}}
             {% for task_def in family.task_defs %}
-                {% for task in task_def.tasks %}
-                <div class='task'>
+            {% for task in task_def.tasks %}
+            <div class='task'>
 
-                    {{task.definition.family.name}} - {{task.definition.revision}}
+                {{task.definition.family.name}} - {{task.definition.revision}}
 
-                    <ul class='container-list'>
-                        {% for container in task.containers %}
-                        {% if container.status %}
-                            <li>
-                                {{container.name}}
+                <ul class='container-list'>
+                    {% for container in task.containers %}
+                    {% if container.status %}
+                    <li>
+                        {{container.name}}
                                 <span class="action"
                                       onclick="execContainer('{{task.instance.ip}}','{{task.arn}}', '{{container.name}}')">exec</span>
-                            </li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endfor %}
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
             {% endfor %}
         </div>
         {% endfor %}
