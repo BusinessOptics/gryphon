@@ -28,11 +28,14 @@ def get_task_definition(arn):
 
 
 def get_task_def_list():
-    lst = ecs.list_task_definitions().get('taskDefinitionArns')
-    result = []
+    lst = ecs.list_task_definitions(maxResults=15).get('taskDefinitionArns')
+    result = {}
     for arn in lst:
         definition = get_task_definition(arn)
-        result.append(definition.get('family')+'-'+str(definition.get('revision')))
+        if result.get(definition.get('family')):
+            result[definition.get('family')].append(definition.get('revision'))
+        else:
+            result[definition.get('family')] = [definition.get('revision')]
     return result
 
 

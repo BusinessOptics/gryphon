@@ -33,7 +33,7 @@ def cluster(cluster_name):
 @app.route('/taskDefinitions/', methods=['GET', 'POST'])
 def definitions():
     task_definitions = get_task_def_list()
-    return render_template('definitions.html', task_definitions=task_definitions)
+    return render_template('definitions.html', task_definitions=task_definitions, should_exec=False)
 
 
 @app.route('/static/<path:path>')

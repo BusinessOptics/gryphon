@@ -18,6 +18,39 @@
         }).afterClose(function (modal) { modal.destroy(); }).show();
     }
 
+    function toggleElements(name){
+        parent = document.getElementById(name);
+        children = parent.children;
+        var i;
+        for (i = 0; i < children.length; i++) {
+            if(!children[i].classList.contains("skip")){
+                children[i].style.display = "none";
+            }
+            if(children[i].classList.contains("action")){
+                button = children[i];
+            }
+        }
+        button.innerHTML = "show";
+        button.onClick = function(){ showElements(name); };
+    }
+
+    function showElements(name){
+        parent = document.getElementById(name);
+        children = parent.children;
+        var button;
+        var i;
+        for (i = 0; i < children.length; i++) {
+            if(!children[i].classList.contains("skip")){
+                children[i].style.display = "block";
+            }
+            if(children[i].classList.contains("action")){
+                button = children[i];
+            }
+        }
+        button.innerHTML = "hide";
+        button.onClick = function(){ hideElements(name); };
+    }
+
 </script>
 {% endblock %}
 {% block body %}
@@ -35,13 +68,19 @@
 <div class='overview'>
     <div class="task-definition-container">
         <h2>Task Definitions</h2>
+        {% for family in task_definitions %}
         <div class="task-definitions">
-            {% for task in task_definitions %}
-            <div class="task-definition">
-                {{task}}
-            </div>
+            <div class="task-definition" id="{{family}}" >
+            <p class="action skip" onclick="hideElements('{{family}}')">hide</p>
+            <h2  class="skip">{{family}}</h2>
+            {% for revision in task_definitions[family] %}
+                <div class="task">
+                    {{family}} - {{revision}}
+                </div>
             {% endfor %}
+            </div>
         </div>
+        {% endfor %}
     </div>
 
 </div>
