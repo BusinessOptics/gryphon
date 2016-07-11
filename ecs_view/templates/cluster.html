@@ -26,7 +26,7 @@
         }).afterClose(function (modal) { modal.destroy(); }).show();
     }
 
-    function run(image_name, env){
+    function run(image_name, env, auth_data){
         envVariables = "";
         Object.keys(env).forEach(function(key,index) {
             envVariables = envVariables + "-e " + key + "=" + env[key] + " ";
