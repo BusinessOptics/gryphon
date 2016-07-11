@@ -71,13 +71,24 @@
         {% for family in task_definitions %}
         <div class="task-definitions">
             <div class="task-definition" id="{{family}}" >
-            <p class="action skip" onclick="hideElements('{{family}}')">hide</p>
-            <h2  class="skip">{{family.name}}</h2>
-            {% for task_def in family.task_defs %}
-                <div class="task">
-                    {{family.name}} - {{task_def.revision}}
-                </div>
-            {% endfor %}
+                <a
+                class='action skip'
+                target='_blank'
+                href='https://console.aws.amazon.com/ecs/home?region=us-east-1#/taskDefinitions/{{family.name}}'>console</a>
+                <p class="action skip action-p" onclick="showElements('{{family}}')">show</p>
+                <h2  class="skip">{{family.name}}</h2>
+                {% for task_def in family.task_defs %}
+                    <div class="task none">
+                        <a
+                        class='action'
+                        target='_blank'
+                        href='https://console.aws.amazon.com/ecs/home?region=us-east-1#/taskDefinitions/{{family.name}}/{{task_def.revision}}'>console</a>
+                        {% set container_def = task_def.container_defs[0] %}
+                        {% include "runbutton.html" %}
+                        {{family.name}} - {{task_def.revision}}
+
+                    </div>
+                {% endfor %}
             </div>
         </div>
         {% endfor %}

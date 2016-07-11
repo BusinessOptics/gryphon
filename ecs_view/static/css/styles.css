@@ -209,3 +209,15 @@ ul.container-list li {
 .terminating {
     background-color: #F7E482;
 }
+
+.none {
+    display: none;
+}
+
+.action-p {
+    margin: 0px;
+}
+
+.inactive {
+    background-color: #789c5e;
+}

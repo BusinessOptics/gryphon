@@ -6,9 +6,8 @@
         {% if container.status %}
         <li>
             {{container.name}}
-            <span class="action"
-                  onclick='run("{{container.container_def.image}}",
-                                {{container.container_def.environments | tojson | safe}})'>run</span>
+            {% set container_def = container.container_def %}
+            {% include "runbutton.html" %}
             <span class="action"
                   onclick="execContainer('{{task.instance.ip}}','{{task.arn}}', '{{container.name}}')">exec</span>
         </li>
