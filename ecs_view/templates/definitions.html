@@ -18,7 +18,7 @@
         }).afterClose(function (modal) { modal.destroy(); }).show();
     }
 
-    function toggleElements(name){
+    function hideElements(name){
         parent = document.getElementById(name);
         children = parent.children;
         var i;
@@ -31,7 +31,7 @@
             }
         }
         button.innerHTML = "show";
-        button.onClick = function(){ showElements(name); };
+        button.onclick = function(){ showElements(name); };
     }
 
     function showElements(name){
@@ -48,7 +48,7 @@
             }
         }
         button.innerHTML = "hide";
-        button.onClick = function(){ hideElements(name); };
+        button.onclick = function(){ hideElements(name); };
     }
 
 </script>
@@ -72,10 +72,10 @@
         <div class="task-definitions">
             <div class="task-definition" id="{{family}}" >
             <p class="action skip" onclick="hideElements('{{family}}')">hide</p>
-            <h2  class="skip">{{family}}</h2>
-            {% for revision in task_definitions[family] %}
+            <h2  class="skip">{{family.name}}</h2>
+            {% for task_def in family.task_defs %}
                 <div class="task">
-                    {{family}} - {{revision}}
+                    {{family.name}} - {{task_def.revision}}
                 </div>
             {% endfor %}
             </div>
