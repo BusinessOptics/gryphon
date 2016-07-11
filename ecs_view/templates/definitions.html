@@ -70,7 +70,7 @@
         <div class="task-definition" id="{{family}}" >
             {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/taskDefinitions/'~family.name %}
             {% include "consolebutton.html" %}
-            <p class="action skip action-p" onclick="showElements('{{family}}')">show</p>
+            <p class="action skip" onclick="showElements('{{family}}')">show</p>
             <h2  class="skip">{{family.name}}</h2>
             {% for task_def in family.task_defs %}
                 <div class="task none">

@@ -210,10 +210,15 @@ ul.container-list li {
     display: none;
 }
 
-.action-p {
+p.action.skip {
     margin: 0px;
 }
 
 .pending {
     background-color: #F7E482;
+    float: right;
+    border-radius: 4px;
+    font-size: small;
+    padding: 1px;
+    border: 1px solid #333;
 }
