@@ -69,10 +69,8 @@
 {% endblock %}
 {% block body %}
 <div class='header'>
-    <a
-            class='action'
-            target='_blank'
-            href='https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/{{cluster.name}}/'>console</a>
+    {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/'~cluster.name %}
+    {% include "consolebutton.html" %}
     <a
             class='action'
             target='_blank'

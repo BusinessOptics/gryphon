@@ -91,10 +91,6 @@ h2 {
     border: 1px solid #75b348;
 }
 
-.container {
-
-}
-
 .family {
     margin-bottom: 1em;
     padding: 0.5em;
@@ -218,6 +214,6 @@ ul.container-list li {
     margin: 0px;
 }
 
-.inactive {
-    background-color: #789c5e;
+.pending {
+    background-color: #F7E482;
 }
