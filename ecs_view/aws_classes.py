@@ -20,7 +20,7 @@ def create_clusters():
     return clusters
 
 
-# @functools.lru_cache(maxsize=None)
+@functools.lru_cache(maxsize=None)
 def get_task_definition(arn):
     return ecs.describe_task_definition(
         taskDefinition=arn
@@ -28,12 +28,19 @@ def get_task_definition(arn):
 
 
 def get_task_def_list():
-    lst = ecs.list_task_definitions().get('taskDefinitionArns')
+    lst_all = ecs.list_task_definitions()
+    lst = lst_all['taskDefinitionArns']
+    lst_token = lst_all.get('nextToken')
+    while lst_token is not None:
+        lst_info = ecs.list_task_definitions(next_token=lst_token)
+        lst_token = lst_info.get('nextToken')
+        lst = lst + lst_info['taskArns']
     task_fam_list = defaultdict(list)
     for arn in lst:
         definition = get_task_definition(arn)
         task_fam = definition['family']
         temp_task_def = TaskDefinition(arn=arn, family=task_fam, revision=definition['revision'])
+        print (task_fam, definition['revision'], definition['status '])
         cont_defs = []
         for container in definition['containerDefinitions']:
             environments = {env['name']: env['value'] for env in container['environment']}
