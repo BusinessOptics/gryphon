@@ -75,7 +75,7 @@ h2 {
 }
 
 .task-definition {
-    min-width: 350px;
+    min-width: 400px;
     float: left;
     margin-right: 1em;
     margin-bottom: 1em;
@@ -208,4 +208,16 @@ ul.container-list li {
 
 .terminating {
     background-color: #F7E482;
+}
+
+.none {
+    display: none;
+}
+
+.action-p {
+    margin: 0px;
+}
+
+.inactive {
+    background-color: #789c5e;
 }
