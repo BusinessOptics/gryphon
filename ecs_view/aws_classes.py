@@ -29,11 +29,25 @@ def get_task_definition(arn):
 
 def get_task_def_list():
     lst = ecs.list_task_definitions().get('taskDefinitionArns')
-    result = []
+    task_fam_list = defaultdict(list)
     for arn in lst:
         definition = get_task_definition(arn)
-        result.append(definition.get('family')+'-'+str(definition.get('revision')))
-    return result
+        task_fam = definition['family']
+        temp_task_def = TaskDefinition(arn=arn, family=task_fam, revision=definition['revision'])
+        cont_defs = []
+        for container in definition['containerDefinitions']:
+            environments = {env['name']: env['value'] for env in container['environment']}
+            temp_cont_def = ContainerDefinition(name=container['name'],
+                                                image=container['image'],
+                                                task_definition=temp_task_def,
+                                                environments=environments)
+            cont_defs.append(temp_cont_def)
+        temp_task_def.container_defs = cont_defs
+        task_fam_list[task_fam].append(temp_task_def)
+    task_fams = []
+    for fam in task_fam_list.keys():
+        task_fams.append(TaskFamily(name=fam, task_defs=task_fam_list[fam]))
+    return task_fams
 
 
 class Cluster:
