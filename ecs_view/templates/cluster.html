@@ -32,7 +32,8 @@
             envVariables = envVariables + "-e " + key + "=" + env[key] + " ";
         });
 
-        var command = "docker run -it -u root " + envVariables + image_name + " bash";
+        var command = "docker login -u "+auth_data["username"]+" -p "+auth_data["password"]+" -e none "+auth_data["endpoint"]
+        command = command+"; docker run -it -u root " + envVariables + image_name + " bash";
 
         picoModal({
             content: '<pre><textarea style="width:100%; height:10em;">'+command+'</textarea></pre>',
