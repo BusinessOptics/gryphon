@@ -22,7 +22,7 @@ def create_clusters():
     return clusters
 
 
-@functools.lru_cache(maxsize=None)
+#@functools.lru_cache(maxsize=None)
 def get_task_definition(arn):
     return ecs.describe_task_definition(
         taskDefinition=arn
@@ -31,12 +31,12 @@ def get_task_definition(arn):
 
 def get_task_def_list():
     lst_all = ecs.list_task_definitions()
-    lst_raw = lst_all['taskDefinitionArns']
+    lst = lst_all['taskDefinitionArns']
     lst_token = lst_all.get('nextToken')
     while lst_token is not None:
         lst_info = ecs.list_task_definitions(nextToken=lst_token)
         lst_token = lst_info.get('nextToken')
-        lst_raw = lst_raw + lst_info['taskDefinitionArns']
+        lst = lst + lst_info['taskDefinitionArns']
     task_fam_list = defaultdict(list)
     # fam_to_rev = defaultdict(list)
     # lst = []
@@ -62,8 +62,9 @@ def get_task_def_list():
         task_fam_list[task_fam].append(temp_task_def)
     task_fams = []
     for fam in task_fam_list.keys():
-        task_fams.append(TaskFamily(name=fam, task_defs=sorted(task_fam_list[fam])))
-    return sorted(task_fams)
+        task_fams.append(TaskFamily(name=fam,
+                                    task_defs=sorted(task_fam_list[fam], key=lambda x: x.revision)))
+    return sorted(task_fams, key=lambda x: x.name)
 
 
 class Cluster:

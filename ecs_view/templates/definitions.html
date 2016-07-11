@@ -23,7 +23,7 @@
         children = parent.children;
         var i;
         for (i = 0; i < children.length; i++) {
-            if(!children[i].classList.contains("skip")){
+            if(children[i].classList.contains("task")){
                 children[i].style.display = "none";
             }
             if(children[i].classList.contains("action")){
@@ -40,7 +40,7 @@
         var button;
         var i;
         for (i = 0; i < children.length; i++) {
-            if(!children[i].classList.contains("skip")){
+            if(children[i].classList.contains("task")){
                 children[i].style.display = "block";
             }
             if(children[i].classList.contains("action")){
@@ -49,6 +49,26 @@
         }
         button.innerHTML = "hide";
         button.onclick = function(){ hideElements(name); };
+    }
+
+    function hideAllElements(){
+        var all = document.getElementsByTagName("*");
+        var i;
+        for (i = 0; i < all.length; i++) {
+            if(all[i].classList.contains("task")){
+                all[i].style.display = "none";
+            }
+        }
+    }
+
+    function showAllElements(){
+        var all = document.getElementsByTagName("*");
+        var i;
+        for (i = 0; i < all.length; i++) {
+            if(all[i].classList.contains("task")){
+                all[i].style.display = null;
+            }
+        }
     }
 
 </script>
@@ -65,13 +85,15 @@
 </div>
 <div class='overview'>
     <div class="task-definition-container">
+        <div class="action" onclick="showAllElements()">show all</div>
+        <div class="action" onclick="hideAllElements()">hide all</div>
         <h2>Task Definitions</h2>
         {% for family in task_definitions %}
         <div class="task-definition" id="{{family}}" >
             {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/taskDefinitions/'~family.name %}
             {% include "consolebutton.html" %}
-            <p class="action skip" onclick="showElements('{{family}}')">show</p>
-            <h2  class="skip">{{family.name}}</h2>
+            <p class="action" onclick="showElements('{{family}}')">show</p>
+            <h2>{{family.name}}</h2>
             {% for task_def in family.task_defs %}
                 <div class="task none">
                     {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/taskDefinitions/'~family.name~'/'~task_def.revision %}
