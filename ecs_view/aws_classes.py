@@ -1,6 +1,8 @@
 from collections import defaultdict
 import boto3
 import functools
+from multiprocessing.pool import ThreadPool
+import re
 
 boto3.setup_default_session(region_name='us-east-1')
 ecs = boto3.client('ecs')
@@ -29,16 +31,24 @@ def get_task_definition(arn):
 
 def get_task_def_list():
     lst_all = ecs.list_task_definitions()
-    lst = lst_all['taskDefinitionArns']
+    lst_raw = lst_all['taskDefinitionArns']
     lst_token = lst_all.get('nextToken')
     while lst_token is not None:
         lst_info = ecs.list_task_definitions(nextToken=lst_token)
         lst_token = lst_info.get('nextToken')
-        lst = lst + lst_info['taskDefinitionArns']
+        lst_raw = lst_raw + lst_info['taskDefinitionArns']
     task_fam_list = defaultdict(list)
-    for arn in lst:
-        definition = get_task_definition(arn)
+    # fam_to_rev = defaultdict(list)
+    # lst = []
+    # for arn in lst_raw:
+    #     family, revision = re.match(
+    #         r'arn:aws:ecs:us-east-1:667583086810:task-definition/(\w+):(\d+)', arn).groups()
+    #     family = arn[arn.find('/')]
+    t_pool = ThreadPool(10)
+    t_definitions = t_pool.map(get_task_definition, lst)
+    for definition in t_definitions:
         task_fam = definition['family']
+        arn = definition['taskDefinitionArn']
         temp_task_def = TaskDefinition(arn=arn, family=task_fam, revision=definition['revision'])
         cont_defs = []
         for container in definition['containerDefinitions']:
@@ -52,8 +62,8 @@ def get_task_def_list():
         task_fam_list[task_fam].append(temp_task_def)
     task_fams = []
     for fam in task_fam_list.keys():
-        task_fams.append(TaskFamily(name=fam, task_defs=task_fam_list[fam]))
-    return task_fams
+        task_fams.append(TaskFamily(name=fam, task_defs=sorted(task_fam_list[fam])))
+    return sorted(task_fams)
 
 
 class Cluster:
@@ -79,7 +89,7 @@ class Cluster:
         while task_next_token is not None:
             task_info = ecs.list_tasks(cluster=self.name, nextToken=task_next_token)
             task_next_token = task_info.get('nextToken')
-            task_keys = task_keys+task_info['taskArns']
+            task_keys = task_keys + task_info['taskArns']
         task_info = ecs.describe_tasks(cluster=self.name, tasks=task_keys)['tasks']
         cont_inst_arn = defaultdict(list)
         task_dict = defaultdict(list)
@@ -99,21 +109,22 @@ class Cluster:
             tasks[task_arn].containers = conts
         families = defaultdict(list)
         cont_defs_by_task_defs = defaultdict(list)
-        for task_def_arn, child_task_arns in task_dict.items():
-            task_def_info = get_task_definition(task_def_arn)
-            task_def_arn = task_def_info['taskDefinitionArn']
+        t_pool = ThreadPool(10)
+        t_definitions = t_pool.map(get_task_definition, task_dict.keys())
+        for definition in t_definitions:
+            task_def_arn = definition['taskDefinitionArn']
             task_defs[task_def_arn] = TaskDefinition(arn=task_def_arn,
-                                                     family=task_def_info['family'],
-                                                     revision=task_def_info['revision'],
-                                                     tasks=child_task_arns)
-            families[task_def_info['family']].append(task_defs[task_def_arn])
+                                                     family=definition['family'],
+                                                     revision=definition['revision'],
+                                                     tasks=task_dict[task_def_arn])
+            families[definition['family']].append(task_defs[task_def_arn])
             for task in task_defs[task_def_arn].tasks:
                 task.definition = task_defs[task_def_arn]
-            for cont_def in task_def_info['containerDefinitions']:
+            for cont_def in definition['containerDefinitions']:
                 container_def_name = cont_def['name']
                 environments = {env['name']: env['value'] for env in cont_def['environment']}
                 conts = [cont for cont in containers.values() if
-                              cont.name == container_def_name]
+                         cont.name == container_def_name]
                 temp_container = ContainerDefinition(name=container_def_name,
                                                      image=cont_def['image'],
                                                      task_definition=task_defs[task_def_arn],
