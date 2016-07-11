@@ -20,54 +20,41 @@
 
     function hideElements(name){
         parent = document.getElementById(name);
-        children = parent.children;
+        children = parent.getElementsByClassName("task");
         var i;
         for (i = 0; i < children.length; i++) {
-            if(children[i].classList.contains("task")){
-                children[i].style.display = "none";
-            }
-            if(children[i].classList.contains("action")){
-                button = children[i];
-            }
+            children[i].style.display = "none";
         }
+        var button = parent.getElementsByClassName("toggle")[0];
         button.innerHTML = "show";
         button.onclick = function(){ showElements(name); };
     }
 
     function showElements(name){
         parent = document.getElementById(name);
-        children = parent.children;
-        var button;
+        children = parent.getElementsByClassName("task");
         var i;
         for (i = 0; i < children.length; i++) {
-            if(children[i].classList.contains("task")){
-                children[i].style.display = "block";
-            }
-            if(children[i].classList.contains("action")){
-                button = children[i];
-            }
+            children[i].style.display = "block";
         }
+        var button = parent.getElementsByClassName("toggle")[0];
         button.innerHTML = "hide";
         button.onclick = function(){ hideElements(name); };
     }
 
     function hideAllElements(){
-        var all = document.getElementsByTagName("*");
+        var all = document.getElementsByClassName("task-definition");
         var i;
         for (i = 0; i < all.length; i++) {
-            if(all[i].classList.contains("task")){
-                all[i].style.display = "none";
-            }
+            hideElements(all[i].id)
         }
     }
 
     function showAllElements(){
-        var all = document.getElementsByTagName("*");
+        var all = document.getElementsByClassName("task-definition");
         var i;
         for (i = 0; i < all.length; i++) {
-            if(all[i].classList.contains("task")){
-                all[i].style.display = null;
-            }
+            showElements(all[i].id)
         }
     }
 
@@ -89,10 +76,10 @@
         <div class="action" onclick="hideAllElements()">hide all</div>
         <h2>Task Definitions</h2>
         {% for family in task_definitions %}
-        <div class="task-definition" id="{{family}}" >
+        <div class="task-definition" id="{{family.name}}" >
             {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/taskDefinitions/'~family.name %}
             {% include "consolebutton.html" %}
-            <p class="action" onclick="showElements('{{family}}')">show</p>
+            <p class="action toggle" onclick="showElements('{{family.name}}')">show</p>
             <h2>{{family.name}}</h2>
             {% for task_def in family.task_defs %}
                 <div class="task none">
