@@ -70,8 +70,9 @@ def get_task_def_list():
         task_fam_list[task_fam].append(temp_task_def)
     task_fams = []
     for fam in task_fam_list.keys():
-        task_fams.append(TaskFamily(name=fam, task_defs=sorted(task_fam_list[fam], key=lambda x : x.family)))
-    return sorted(task_fams, key=lambda x : x.name)
+        task_fams.append(TaskFamily(name=fam,
+                                    task_defs=sorted(task_fam_list[fam], key=lambda x: x.revision)))
+    return sorted(task_fams, key=lambda x: x.name)
 
 
 class Cluster:
