@@ -86,8 +86,7 @@ class Cluster:
         for task in task_info:
             task_arn = task['taskArn']
             cont_inst_arn[task['containerInstanceArn']].append(task['taskArn'])
-            tasks[task_arn] = Task(arn=task_arn,
-                                   cluster=self)
+            tasks[task_arn] = Task(arn=task_arn, cluster=self, last_status=task['lastStatus'])
             task_dict[task['taskDefinitionArn']].append(tasks[task_arn])
             conts = []
             for cont in task['containers']:
@@ -208,12 +207,14 @@ class Cluster:
 
 
 class Task:
-    def __init__(self, arn=None, definition=None, containers=None, cluster=None, instance=None):
+    def __init__(self, arn=None, definition=None, containers=None,
+                 cluster=None, instance=None, last_status=None):
         self.arn = arn
         self.definition = definition
         self.containers = containers
         self.cluster = cluster
         self.instance = instance
+        self.last_status = last_status
 
 
 class Instance:
