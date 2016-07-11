@@ -16,6 +16,11 @@ from flask import Flask, render_template, send_from_directory
 app = Flask(__name__, static_url_path='')
 
 
+@app.route('/hello')
+def hello():
+    return 'Hello'
+
+
 @app.route('/')
 def index():
     cluster_list = create_clusters()
