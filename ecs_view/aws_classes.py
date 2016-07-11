@@ -8,7 +8,17 @@ boto3.setup_default_session(region_name='us-east-1')
 ecs = boto3.client('ecs')
 ec2 = boto3.resource('ec2')
 auto_scaling = boto3.client('autoscaling')
+ecr = boto3.client('ecr')
 
+
+def get_authorization():
+    authorization = ecr.get_authorization_token()[0]
+    token = authorization['authorizationToken']
+    proxy = authorization['proxyEndpoint']
+    index = token.find(':')
+    username = token[:index]
+    password = token[index+1:]
+    return {'username': username, 'password': password, 'endpoint': proxy}
 
 def create_clusters():
     clusters = []

@@ -29,16 +29,17 @@ def index():
 
 @app.route('/cluster/<cluster_name>/', methods=['GET', 'POST'])
 def cluster(cluster_name):
+    authorization_data = get_authorization()
     cluster = Cluster(name=cluster_name)
     cluster.setup_cluster()
-
-    return render_template('cluster.html', cluster=cluster)
+    return render_template('cluster.html', cluster=cluster, auth_data=authorization_data)
 
 
 @app.route('/taskDefinitions/', methods=['GET', 'POST'])
 def definitions():
+    authorization_data = get_authorization()
     task_definitions = get_task_def_list()
-    return render_template('definitions.html', task_definitions=task_definitions, should_exec=False)
+    return render_template('definitions.html', task_definitions=task_definitions, should_exec=False, auth_data=authorization_data)
 
 
 @app.route('/static/<path:path>')
