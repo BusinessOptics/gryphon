@@ -32,15 +32,14 @@ def get_task_def_list():
     lst = lst_all['taskDefinitionArns']
     lst_token = lst_all.get('nextToken')
     while lst_token is not None:
-        lst_info = ecs.list_task_definitions(next_token=lst_token)
+        lst_info = ecs.list_task_definitions(nextToken=lst_token)
         lst_token = lst_info.get('nextToken')
-        lst = lst + lst_info['taskArns']
+        lst = lst + lst_info['taskDefinitionArns']
     task_fam_list = defaultdict(list)
     for arn in lst:
         definition = get_task_definition(arn)
         task_fam = definition['family']
         temp_task_def = TaskDefinition(arn=arn, family=task_fam, revision=definition['revision'])
-        print (task_fam, definition['revision'], definition['status '])
         cont_defs = []
         for container in definition['containerDefinitions']:
             environments = {env['name']: env['value'] for env in container['environment']}
@@ -78,7 +77,7 @@ class Cluster:
         if not task_keys:
             return None
         while task_next_token is not None:
-            task_info = ecs.list_tasks(cluster=self.name)
+            task_info = ecs.list_tasks(cluster=self.name, nextToken=task_next_token)
             task_next_token = task_info.get('nextToken')
             task_keys = task_keys+task_info['taskArns']
         task_info = ecs.describe_tasks(cluster=self.name, tasks=task_keys)['tasks']
