@@ -38,6 +38,12 @@ h2 {
     padding-bottom: 0em;
 }
 
+.task-definition-container {
+    padding: 1em;
+    padding-right: 0px;
+    padding-bottom: 0em;
+}
+
 .families {
     padding: 1em;
     padding-bottom: 0em;
@@ -51,7 +57,23 @@ h2 {
     justify-content: space-between;
 }
 
+.task-definitions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
 .instance {
+    min-width: 350px;
+    float: left;
+    margin-right: 1em;
+    margin-bottom: 1em;
+    padding: 0.5em;
+    background-color: #f7f7f7;
+    border: 1px solid #bbb;
+}
+
+.task-definition {
     min-width: 350px;
     float: left;
     margin-right: 1em;
@@ -112,22 +134,23 @@ ul.container-list li {
     border: 1px solid #75b348;
 }
 
-.cluster-list {
+.index-list {
     padding: 1em;
     display: inline-block;
     margin: 1em;
     border: 1px solid #bbb;
     background: #f7f7f7;
+    float: left;
 }
 
-.cluster-list ul {
+.index-list ul {
     list-style: none;
     padding: 0px;
     margin: 0.25em;
 
 }
 
-.cluster-list ul li{
+.index-list ul li{
     margin-bottom: 0.25em;
     border: 1px solid #bbb;
     padding: 0.1em;
@@ -137,13 +160,13 @@ ul.container-list li {
     border-radius: 5px;
 }
 
-.cluster-list ul li a {
+.index-list ul li a {
     color: white;
     display: block;
     cursor: pointer;
 }
 
-.cluster-list ul li:hover {
+.index-list ul li:hover {
     background-color: rgb(170, 210, 141);
     border: 1px solid #75b348;
 }

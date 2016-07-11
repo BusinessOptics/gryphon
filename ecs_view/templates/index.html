@@ -9,7 +9,7 @@
        href="https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters">console</a>
     <h1>Clusters Overview</h1>
 </div>
-<div class="cluster-list">
+<div class="index-list">
     <h2>Clusters</h2>
     <ul>
         {% for cluster in clusters %}
@@ -17,6 +17,14 @@
             <a target="_blank" href="cluster/{{cluster.name}}/">{{cluster.name|title}}</a>
         </li>
         {% endfor %}
+    </ul>
+</div>
+<div class="index-list">
+    <h2>Task Definitions</h2>
+    <ul>
+        <li>
+            <a target="_blank" href="taskDefinitions/">Task Definitions<br>Overview</a>
+        </li>
     </ul>
 </div>
 {% endblock %}

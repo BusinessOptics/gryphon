@@ -30,6 +30,12 @@ def cluster(cluster_name):
     return render_template('cluster.html', cluster=cluster)
 
 
+@app.route('/taskDefinitions/', methods=['GET', 'POST'])
+def definitions():
+    task_definitions = get_task_def_list()
+    return render_template('definitions.html', task_definitions=task_definitions)
+
+
 @app.route('/static/<path:path>')
 def send_staticfles(path):
     return send_from_directory('static', path)

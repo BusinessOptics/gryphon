@@ -27,6 +27,15 @@ def get_task_definition(arn):
     )['taskDefinition']
 
 
+def get_task_def_list():
+    lst = ecs.list_task_definitions().get('taskDefinitionArns')
+    result = []
+    for arn in lst:
+        definition = get_task_definition(arn)
+        result.append(definition.get('family')+'-'+str(definition.get('revision')))
+    return result
+
+
 class Cluster:
     def __init__(self, arn=None, name=None, tasks=None, instances=None, task_families=None):
         self.arn = arn
