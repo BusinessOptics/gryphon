@@ -28,15 +28,26 @@ def get_task_definition(arn):
 
 
 def get_task_def_list():
-    lst = ecs.list_task_definitions(maxResults=15).get('taskDefinitionArns')
-    result = {}
+    lst = ecs.list_task_definitions().get('taskDefinitionArns')
+    task_fam_list = defaultdict(list)
     for arn in lst:
         definition = get_task_definition(arn)
-        if result.get(definition.get('family')):
-            result[definition.get('family')].append(definition.get('revision'))
-        else:
-            result[definition.get('family')] = [definition.get('revision')]
-    return result
+        task_fam = definition['family']
+        temp_task_def = TaskDefinition(arn=arn, family=task_fam, revision=definition['revision'])
+        cont_defs = []
+        for container in definition['containerDefinitions']:
+            environments = {env['name']: env['value'] for env in container['environment']}
+            temp_cont_def = ContainerDefinition(name=container['name'],
+                                                image=container['image'],
+                                                task_definition=temp_task_def,
+                                                environments=environments)
+            cont_defs.append(temp_cont_def)
+        temp_task_def.container_defs = cont_defs
+        task_fam_list[task_fam].append(temp_task_def)
+    task_fams = []
+    for fam in task_fam_list.keys():
+        task_fams.append(TaskFamily(name=fam, task_defs=task_fam_list[fam]))
+    return task_fams
 
 
 class Cluster:
@@ -54,11 +65,15 @@ class Cluster:
         task_defs = {}
         task_families = {}
         container_defs = {}
-        task_keys = ecs.list_tasks(cluster=self.name)['taskArns']
-
+        task_info = ecs.list_tasks(cluster=self.name)
+        task_keys = task_info['taskArns']
+        task_next_token = task_info['nextToken']
         if not task_keys:
             return None
-
+        while task_next_token is not None:
+            task_info = ecs.list_tasks(cluster=self.name)
+            task_next_token = task_info['nextToken']
+            task_keys = task_keys+task_info['taskArns']
         task_info = ecs.describe_tasks(cluster=self.name, tasks=task_keys)['tasks']
         cont_inst_arn = defaultdict(list)
         task_dict = defaultdict(list)
