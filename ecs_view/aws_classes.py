@@ -65,11 +65,15 @@ class Cluster:
         task_defs = {}
         task_families = {}
         container_defs = {}
-        task_keys = ecs.list_tasks(cluster=self.name)['taskArns']
-
+        task_info = ecs.list_tasks(cluster=self.name)
+        task_keys = task_info['taskArns']
+        task_next_token = task_info['nextToken']
         if not task_keys:
             return None
-
+        while task_next_token is not None:
+            task_info = ecs.list_tasks(cluster=self.name)
+            task_next_token = task_info['nextToken']
+            task_keys = task_keys+task_info['taskArns']
         task_info = ecs.describe_tasks(cluster=self.name, tasks=task_keys)['tasks']
         cont_inst_arn = defaultdict(list)
         task_dict = defaultdict(list)
