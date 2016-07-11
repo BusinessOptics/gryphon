@@ -15,12 +15,13 @@ ecr = boto3.client('ecr')
 def get_authorization():
     authorization = ecr.get_authorization_token()['authorizationData'][0]
     encoded_token = authorization['authorizationToken']
-    token = base64.b64decode(encoded_token).decode("utf-8")
+    token = str(base64.b64decode(encoded_token), "utf-8")
     proxy = authorization['proxyEndpoint']
     index = token.find(':')
     username = token[:index]
     password = token[index+1:]
     return {'username': username, 'password': password, 'endpoint': proxy}
+
 
 def create_clusters():
     clusters = []
@@ -34,7 +35,7 @@ def create_clusters():
     return clusters
 
 
-#@functools.lru_cache(maxsize=None)
+@functools.lru_cache(maxsize=None)
 def get_task_definition(arn):
     return ecs.describe_task_definition(
         taskDefinition=arn
