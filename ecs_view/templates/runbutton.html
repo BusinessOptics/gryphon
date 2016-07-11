@@ -1,3 +1,4 @@
 <span class="action"
     onclick='run("{{container_def.image}}",
-                {{container_def.environments | tojson | safe}})'>run</span>
+                  {{container_def.environments | tojson | safe}},
+                  {{auth_data | tojson | safe}})'>run</span>
