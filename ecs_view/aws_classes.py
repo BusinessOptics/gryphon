@@ -3,6 +3,7 @@ import boto3
 import functools
 from multiprocessing.pool import ThreadPool
 import re
+import base64
 
 boto3.setup_default_session(region_name='us-east-1')
 ecs = boto3.client('ecs')
@@ -12,12 +13,14 @@ ecr = boto3.client('ecr')
 
 
 def get_authorization():
-    authorization = ecr.get_authorization_token()[0]
-    token = authorization['authorizationToken']
+    authorization = ecr.get_authorization_token()['authorizationData'][0]
+    encoded_token = authorization['authorizationToken']
+    token = str(base64.b64decode(encoded_token), "utf-8")
     proxy = authorization['proxyEndpoint']
     index = token.find(':')
     username = token[:index]
     password = token[index+1:]
+    print(username, password)
     return {'username': username, 'password': password, 'endpoint': proxy}
 
 def create_clusters():
