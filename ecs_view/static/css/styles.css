@@ -12,6 +12,7 @@ a {
 
 h2 {
     margin: 0px 0px 0.25em;
+    text-align: center;
 }
 
 .header {
@@ -147,7 +148,7 @@ ul.container-list li {
 
 }
 
-.index-list ul li{
+.index-list tr td div, .task-def-btn-div{
     margin-bottom: 0.25em;
     border: 1px solid #bbb;
     padding: 0.1em;
@@ -157,13 +158,13 @@ ul.container-list li {
     border-radius: 5px;
 }
 
-.index-list ul li a {
+.index-list tr td div a, .task-def-btn{
     color: white;
     display: block;
     cursor: pointer;
 }
 
-.index-list ul li:hover {
+.index-list tr td div:hover, .task-def-btn-div:hover {
     background-color: rgb(170, 210, 141);
     border: 1px solid #75b348;
 }
