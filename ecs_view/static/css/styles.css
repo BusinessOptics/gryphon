@@ -224,7 +224,19 @@ p.action {
     border: 1px solid #333;
 }
 
-.pico-copied-note {
+.pico-copied-note, .pico-note {
     font-size: small;
+    margin: 0px;
+}
+
+.pico-check {
+    float: right;
+}
+
+.pico-check table {
+    border-collapse: collapse;
+}
+
+.pico-check table tr td input {
     margin: 0px;
 }
