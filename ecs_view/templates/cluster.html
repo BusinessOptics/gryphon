@@ -8,13 +8,13 @@
         'dockerCommand="CONTAINER_ID=\\`curl http://localhost:51678/v1/tasks?taskarn=\${taskArn} | jq -r \'.Containers[] | select(.Name=\\"\${containerName}\\").DockerId\'\\`; sudo docker exec -it -u root \\${CONTAINER_ID} bash";\n' +
         'ssh -i ~/.ssh/default.pem core@' + ip + ' -t "set -ex; $dockerCommand"\n'
 
-        generatePicoModal(command, "10em").show();
+        generatePicoModal(command, "10em", true).show();
 
     }
 
     function ssh(ip){
         var command = "ssh " + ip;
-        generatePicoModal(command, "2em").show();
+        generatePicoModal(command, "2em", false).show();
     }
 
 
