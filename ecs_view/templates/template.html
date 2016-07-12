@@ -5,8 +5,40 @@
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" type="text/css" href="/static/css/styles.css">
     <link rel="shortcut icon" href="/static/favicon.ico">
-    {% block scripts %}
-    {% endblock %}
+    <script src="/static/js/picoModal.js"></script>
+    <script>
+        function copyToClipboard(){
+            textArea = document.getElementsByTagName("textarea");
+            textArea[0].select();
+            document.execCommand("copy");
+            pico = document.getElementsByClassName("pico-copied-note");
+            pico[0].innerHTML = "Copied";
+        }
+
+        function generatePicoModal(command, height){
+            return picoModal({
+            content: '<pre><textarea style="width:100%; height:'+height+';">'+command+'</textarea></pre>'
+                    +'<div class="action" onclick="copyToClipboard()">copy to clipboard</div>'
+                    +'<p class="pico-copied-note"></p>',
+            width: '50%'
+            }).afterClose(function (modal) { modal.destroy(); });
+        }
+
+        function run(image_name, env, auth_data){
+            envVariables = "";
+            Object.keys(env).forEach(function(key,index) {
+                envVariables = envVariables + "-e " + key + "=" + env[key] + " ";
+            });
+
+            var command = "docker login -u "+auth_data["username"]+" -p "+auth_data["password"]+" -e none "+auth_data["endpoint"]
+            command = command+"; docker run -it -u root " + envVariables + image_name + " bash";
+
+            generatePicoModal(command, "10em").show();
+        }
+
+        {% block scripts %}
+        {% endblock %}
+    </script>
 </head>
 <body>
 {% block body %}

@@ -222,3 +222,8 @@ p.action {
     padding: 1px;
     border: 1px solid #333;
 }
+
+.pico-copied-note {
+    font-size: small;
+    margin: 0px;
+}

@@ -1,9 +1,6 @@
 {% extends "template.html" %}
 {% block title %}{{cluster.name|title}} cluster overview{% endblock %}
 {% block scripts %}
-<script src="/static/js/picoModal.js"></script>
-<script>
-
     function execContainer(ip, task, containerName){
 
     var command = 'containerName="'+containerName+'";\n' +
@@ -11,35 +8,16 @@
         'dockerCommand="CONTAINER_ID=\\`curl http://localhost:51678/v1/tasks?taskarn=\${taskArn} | jq -r \'.Containers[] | select(.Name=\\"\${containerName}\\").DockerId\'\\`; sudo docker exec -it -u root \\${CONTAINER_ID} bash";\n' +
         'ssh -i ~/.ssh/default.pem core@' + ip + ' -t "set -ex; $dockerCommand"\n'
 
-        picoModal({
-            content: '<pre><textarea style="width:100%; height:10em;">'+command+'</textarea></pre>',
-            width: '50%'
-        }).afterClose(function (modal) { modal.destroy(); }).show();
+        generatePicoModal(command, "10em").show();
 
     }
 
     function ssh(ip){
         var command = "ssh " + ip;
-        picoModal({
-            content: '<pre><textarea style="width:100%; height:2em;">'+command+'</textarea></pre>',
-            width: '50%'
-        }).afterClose(function (modal) { modal.destroy(); }).show();
+        generatePicoModal(command, "2em").show();
     }
 
-    function run(image_name, env, auth_data){
-        envVariables = "";
-        Object.keys(env).forEach(function(key,index) {
-            envVariables = envVariables + "-e " + key + "=" + env[key] + " ";
-        });
 
-        var command = "docker login -u "+auth_data["username"]+" -p "+auth_data["password"]+" -e none "+auth_data["endpoint"]
-        command = command+"; docker run -it -u root " + envVariables + image_name + " bash";
-
-        picoModal({
-            content: '<pre><textarea style="width:100%; height:10em;">'+command+'</textarea></pre>',
-            width: '50%'
-        }).afterClose(function (modal) { modal.destroy(); }).show();
-    }
 
     function setTime(d, elem) {
         var id = setInterval(frame, 100);
@@ -65,8 +43,6 @@
     function timePad(t){
         return String("00" + t).slice(-2)
     }
-
-</script>
 {% endblock %}
 {% block body %}
 <div class='header'>
