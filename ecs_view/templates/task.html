@@ -1,0 +1,22 @@
+<div class='task'>
+    {% if task.last_status == 'PENDING' %}
+    <div class="pending">
+        pending
+    </div>
+    {% endif %}
+    {{task.definition.family.name}} - {{task.definition.revision}}
+
+    <ul class='container-list'>
+        {% for container in task.containers %}
+        {% if container.status %}
+        <li>
+            {{container.name}}
+            {% set container_def = container.container_def %}
+            {% include "runbutton.html" %}
+            <span class="action"
+                  onclick="execContainer('{{task.instance.ip}}','{{task.arn}}', '{{container.name}}')">exec</span>
+        </li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+</div>

@@ -1,0 +1,128 @@
+{% extends "template.html" %}
+{% block title %}{{cluster.name|title}} cluster overview{% endblock %}
+{% block scripts %}
+    function execContainer(ip, task, containerName){
+
+    var command = 'containerName="'+containerName+'";\n' +
+        'taskArn=' + task + ';\n' +
+        'dockerCommand="CONTAINER_ID=\\`curl http://localhost:51678/v1/tasks?taskarn=\${taskArn} | jq -r \'.Containers[] | select(.Name=\\"\${containerName}\\").DockerId\'\\`; sudo docker exec -it -u root \\${CONTAINER_ID} bash";\n' +
+        'ssh ' + ip + ' -t "set -ex; $dockerCommand"\n'
+
+        generatePicoModal(command, "10em", true).show();
+    }
+
+    function ssh(ip){
+        var command = "ssh " + ip;
+        generatePicoModal(command, "2em", false).show();
+    }
+
+
+
+    function setTime(d, elem) {
+        var id = setInterval(frame, 100);
+        function frame() {
+            elem.innerHTML = 'uptime: '+getTime(d)
+        }
+    }
+
+    function getTime(d){
+        var oneDay = 24*60*60*1000;	// hours*minutes*seconds*milliseconds
+        var cur = new Date()
+        var epoch = new Date(cur.getUTCFullYear(), cur.getUTCMonth(), cur.getUTCDate(),
+                             cur.getUTCHours(), cur.getUTCMinutes(), cur.getUTCSeconds());
+        var dat = epoch-d;
+
+        var diffDays = Math.floor((dat)/(oneDay));
+        var diffHours = Math.floor((dat)/(oneDay/24)-diffDays*24);
+        var diffMins = Math.floor((dat)/(60000)-diffHours*60-diffDays*24*60);
+        var diffSecs = Math.floor((dat)/(1000)-diffMins*60-diffHours*60*60-diffDays*24*60*60);
+        return diffDays+'d '+timePad(diffHours)+':'+timePad(diffMins)+':'+timePad(diffSecs);
+    }
+
+    function timePad(t){
+        return String("00" + t).slice(-2)
+    }
+{% endblock %}
+{% block body %}
+<div class='header'>
+    <a class='action' href='/'><i class="fa fa-home"></i> index</a>
+    {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/'~cluster.name %}
+    {% include "consolebutton.html" %}
+    <h1><i class="fa fa-server"></i> {{cluster.name|title}} Cluster</h1>
+</div>
+<div class='overview'>
+    <div class='instances-container'>
+        <h2>Instances</h2>
+        <div class='instances'>
+            {% set instances = cluster.instances %}
+            {% for instance in instances %}
+            <div class='instance{% if instance.life_cycle_state == "Terminating:Wait" %}
+                                 terminating{% endif %}'>
+                {{instance.name}}
+                ({{instance.ip}})
+                <span>{{instance.type}}</span>
+
+                <a class="action" target='_blank' href='http://{{instance.ip}}:9080'>cAdvisor</a>
+
+                <span class="action" onclick="ssh('{{instance.ip}}')">ssh</span>
+
+                <table class="chart">
+                    <tr>
+                        <td class="chart_col">cpu</td>
+                        <td class="resource_used chart_col">{{ instance.cpu_used }}</td>
+                        <td class="bar_td">
+                            <div class="resource_bar" style="width:{{instance.cpu_perc}}%">
+                                {{instance.cpu_perc | round | int}}%
+                            </div>
+                        </td>
+                        <td class="resource_remaining chart_col">{{ instance.cpu_rem }}</td>
+                    </tr>
+                    <tr>
+                        <td class="chart_col">mem</td>
+                        <td class="resource_used chart_col">{{ instance.mem_used }}</td>
+                        <td class="bar_td">
+                            <div class="resource_bar" style="width:{{instance.mem_perc}}%">
+                                {{instance.mem_perc | round | int}}%
+                            </div>
+                        </td>
+                        <td class="resource_remaining chart_col">{{ instance.mem_rem }}</td>
+                    </tr>
+                </table>
+
+                <div class="uptime">
+                    <p  class="time" id="time-{{instance.id}}"></p>
+                    <script>
+                        var launch = new Date({{instance.launch_time.year}},
+                                         {{instance.launch_time.month}}-1,
+                                         {{instance.launch_time.day}},
+                                         {{instance.launch_time.hour}},
+                                         {{instance.launch_time.minute}},
+                                         {{instance.launch_time.second}});
+                        setTime(launch, document.getElementById("time-{{instance.id}}"));
+                    </script>
+                </div>
+
+                {% for task in instance.tasks %}
+                    {% include "task.html" %}
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class='families'>
+        <h2>Task families</h2>
+        {% set families = cluster.task_families %}
+        {% for family in families %}
+        <div class='family'>
+            {{family.name}}
+            {% for task_def in family.task_defs %}
+                {% for task in task_def.tasks %}
+                    {% include "task.html" %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
