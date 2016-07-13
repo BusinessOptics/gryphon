@@ -1,35 +1,28 @@
 {% extends "template.html" %}
-{% block title %}Amazon EC2 Cluster Service Overview{% endblock %}
+
+{% block title %}ECS Overview{% endblock %}
+
 {% block scripts %}
 {% endblock %}
+
 {% block body %}
 <div class="header">
-    {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters' %}
+  {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters' %}
+  {% include "consolebutton.html" %}
+  <a target="_blank" class="action" href="/task_definitions"><i class="fa fa-tasks"></i> Task definitions</a>
+  <h1><i class="fa fa-cloud"></i> ECS Overview</h1>
+</div>
+<div class="index-list">
+  <h2>Clusters</h2>
+  <ul>
+    {% for cluster in clusters %}
+    <li>
+    <a target="_blank" href="cluster/{{cluster.name}}/">{{cluster.name|title}}</a>
+    {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/'~cluster.name %}
     {% include "consolebutton.html" %}
-    <h1>Amazon EC2 Cluster Service Overview</h1>
-</div>
-<div class="index-list">
-    <h2>Clusters</h2>
-    <table>
-        {% for cluster in clusters %}
-            <tr>
-                <td>
-                    <div>
-                        <a target="_blank" href="cluster/{{cluster.name}}/">{{cluster.name|title}}</a>
-                    </div>
-                </td>
-                <td>
-                    {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/'~cluster.name %}
-                    {% include "consolebutton.html" %}
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
-</div>
-<div class="index-list">
-    <h2>Task Definitions</h2>
-    <div class="task-def-btn-div">
-        <a target="_blank" href="taskDefinitions/" class="task-def-btn">Task Definitions<br>Overview</a>
-    </div>
+    <a target="_blank" class="action" href="cluster/{{cluster.name}}/"><i class="fa fa-eye"></i> overview</a>
+    </li>
+    {% endfor %}
+  </table>
 </div>
 {% endblock %}

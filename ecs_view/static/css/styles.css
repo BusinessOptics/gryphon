@@ -12,7 +12,6 @@ a {
 
 h2 {
     margin: 0px 0px 0.25em;
-    text-align: center;
 }
 
 .header {
@@ -21,16 +20,24 @@ h2 {
     padding: 3px;
 }
 
+.header a.action {
+    margin: 5px;
+}
+
 .header h1 {
     margin: 0px;
     font-size: 22px;
+    font-weight: normal;
+}
+
+.header h1 i {
+    border-right: 2px solid #ececec;
+    padding-right: 8px;
 }
 
 .overview {
     display: flex;
     justify-content: space-between;
-    border: 1px solid #bbb;
-    margin: 1em;
 }
 
 .instances-container {
@@ -132,41 +139,25 @@ ul.container-list li {
     border: 1px solid #75b348;
 }
 
+
 .index-list {
     padding: 1em;
-    display: inline-block;
-    margin: 1em;
-    border: 1px solid #bbb;
-    background: #f7f7f7;
-    float: left;
+    max-width:800px;
 }
 
 .index-list ul {
     list-style: none;
     padding: 0px;
-    margin: 0.25em;
-
 }
 
-.index-list tr td div, .task-def-btn-div{
-    margin-bottom: 0.25em;
-    border: 1px solid #bbb;
-    padding: 0.1em;
-    text-align: center;
-    background: #75b348;
-    cursor: pointer;
-    border-radius: 5px;
+.index-list ul li {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid #ececec;
 }
 
-.index-list tr td div a, .task-def-btn{
-    color: white;
-    display: block;
-    cursor: pointer;
-}
-
-.index-list tr td div:hover, .task-def-btn-div:hover {
-    background-color: rgb(170, 210, 141);
-    border: 1px solid #75b348;
+.index-list ul li:first-child {
+    border-top: 1px solid #ececec;
 }
 
 .chart {

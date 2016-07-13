@@ -35,7 +35,7 @@ def cluster(cluster_name):
     return render_template('cluster.html', cluster=cluster, auth_data=authorization_data)
 
 
-@app.route('/taskDefinitions/', methods=['GET', 'POST'])
+@app.route('/task_definitions/', methods=['GET', 'POST'])
 def definitions():
     authorization_data = get_authorization()
     task_definitions = get_task_def_list()

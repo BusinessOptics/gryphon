@@ -44,13 +44,10 @@
 {% endblock %}
 {% block body %}
 <div class='header'>
+    <a class='action' href='/'><i class="fa fa-home"></i> index</a>
     {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/taskDefinitions' %}
     {% include "consolebutton.html" %}
-    <a
-            class='action'
-            target='_blank'
-            href='../../'>index</a>
-    <h1>Task Definitions Overview</h1>
+    <h1><i class="fa fa-tasks"></i> Task Definitions</h1>
 </div>
 <div class='overview'>
     <div class="task-definition-container">
@@ -59,10 +56,10 @@
         <h2>Task Definitions</h2>
         {% for family in task_definitions %}
         <div class="task-definition" id="{{family.name}}" >
+            <span class="action toggle" onclick="showElements('{{family.name}}')">show</span>
             {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/taskDefinitions/'~family.name %}
             {% include "consolebutton.html" %}
-            <p class="action toggle" onclick="showElements('{{family.name}}')">show</p>
-            <h2>{{family.name}}</h2>
+            <span>{{family.name}}</span>
             {% for task_def in family.task_defs %}
                 <div class="task none">
                     {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/taskDefinitions/'~family.name~'/'~task_def.revision %}

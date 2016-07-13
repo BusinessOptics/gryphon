@@ -6,10 +6,9 @@
     var command = 'containerName="'+containerName+'";\n' +
         'taskArn=' + task + ';\n' +
         'dockerCommand="CONTAINER_ID=\\`curl http://localhost:51678/v1/tasks?taskarn=\${taskArn} | jq -r \'.Containers[] | select(.Name=\\"\${containerName}\\").DockerId\'\\`; sudo docker exec -it -u root \\${CONTAINER_ID} bash";\n' +
-        'ssh -i ~/.ssh/default.pem core@' + ip + ' -t "set -ex; $dockerCommand"\n'
+        'ssh ' + ip + ' -t "set -ex; $dockerCommand"\n'
 
         generatePicoModal(command, "10em", true).show();
-
     }
 
     function ssh(ip){
@@ -46,13 +45,10 @@
 {% endblock %}
 {% block body %}
 <div class='header'>
+    <a class='action' href='/'><i class="fa fa-home"></i> index</a>
     {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/'~cluster.name %}
     {% include "consolebutton.html" %}
-    <a
-            class='action'
-            target='_blank'
-            href='../../'>index</a>
-    <h1>{{cluster.name|title}} Cluster Overview</h1>
+    <h1><i class="fa fa-server"></i> {{cluster.name|title}} Cluster</h1>
 </div>
 <div class='overview'>
     <div class='instances-container'>
