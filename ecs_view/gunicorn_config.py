@@ -1,8 +1,6 @@
 import os
 
-# Turn on reloading if in local environment
-reload = os.environ.get('ENVIRONMENT') == 'local'
-
+reload = (os.environ.get('DEV_MODE',0) == 0)
 user = 'www-data'
 bind = '0.0.0.0:3000'
 workers = 6

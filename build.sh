@@ -1,1 +1,1 @@
-sudo docker build -t griffon .
+docker build -t griffon .

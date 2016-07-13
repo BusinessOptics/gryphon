@@ -40,7 +40,6 @@ def create_clusters():
 
 @functools.lru_cache(maxsize=None)
 def get_task_definition(arn):
-    count = 1
     task_def = {}
     while True:
         try:
