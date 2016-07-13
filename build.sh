@@ -1,1 +1,1 @@
-sudo docker build -t gryphon .
+docker build -t gryphon .
