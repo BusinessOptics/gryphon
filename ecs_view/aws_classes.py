@@ -1,9 +1,11 @@
 from collections import defaultdict
 import boto3
+import botocore
 import functools
 from multiprocessing.pool import ThreadPool
 import re
 import base64
+import time
 
 boto3.setup_default_session(region_name='us-east-1')
 ecs = boto3.client('ecs')
@@ -15,7 +17,7 @@ ecr = boto3.client('ecr')
 def get_authorization():
     authorization = ecr.get_authorization_token()['authorizationData'][0]
     encoded_token = authorization['authorizationToken']
-    token = str(base64.b64decode(encoded_token), "utf-8")
+    token = base64.b64decode(encoded_token).decode("utf-8")
     proxy = authorization['proxyEndpoint']
     index = token.find(':')
     username = token[:index]
@@ -35,11 +37,26 @@ def create_clusters():
     return clusters
 
 
-@functools.lru_cache(maxsize=None)
+#@functools.lru_cache(maxsize=None)
 def get_task_definition(arn):
-    return ecs.describe_task_definition(
-        taskDefinition=arn
-    )['taskDefinition']
+    count = 1
+    task_def = {}
+    while True:
+        try:
+            task_def = ecs.describe_task_definition(
+                taskDefinition=arn
+            )['taskDefinition']
+            break
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == 'ThrottlingException':
+                time.sleep(1 * count)
+                count += 1
+                if count > 10:
+                    raise
+                continue
+            else:
+                raise
+    return task_def
 
 
 def get_task_def_list():
@@ -61,12 +78,13 @@ def get_task_def_list():
     for key in fam_to_rev.keys():
         temp_list = fam_to_rev[key]
         temp_list.sort(reverse=True)
-        top_5 = temp_list[:5]
+        top_5 = temp_list[:]
         final_list = ["arn:aws:ecs:us-east-1:667583086810:task-definition/"+key+":"+str(num)
                       for num in top_5]
         lst = lst+final_list
     t_pool = ThreadPool(10)
     t_definitions = t_pool.map(get_task_definition, lst)
+
     for definition in t_definitions:
         task_fam = definition['family']
         arn = definition['taskDefinitionArn']
