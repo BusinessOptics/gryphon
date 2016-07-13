@@ -5,7 +5,7 @@
 
     var command = 'containerName="'+containerName+'";\n' +
         'taskArn=' + task + ';\n' +
-        'dockerCommand="CONTAINER_ID=\\`curl http://localhost:51678/v1/tasks?taskarn=\${taskArn} | jq -r \'.Containers[] | select(.Name=\\"\${containerName}\\").DockerId\'\\`; sudo docker exec -it -u root \\${CONTAINER_ID} bash";\n' +
+        'dockerCommand="CONTAINER_ID=\\`curl http://localhost:51678/v1/tasks?taskarn=\${taskArn} | jq -r \\".Containers[] | select(.Name==\\\\\\"\${containerName}\\\\\\").DockerId\\"\\`; sudo docker exec -it -u root \\${CONTAINER_ID} bash";\n' +
         'ssh ' + ip + ' -t "set -ex; $dockerCommand"\n'
 
         generatePicoModal(command, "10em", true).show();
@@ -15,8 +15,6 @@
         var command = "ssh " + ip;
         generatePicoModal(command, "2em", false).show();
     }
-
-
 
     function setTime(d, elem) {
         var id = setInterval(frame, 100);

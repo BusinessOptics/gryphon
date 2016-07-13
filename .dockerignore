@@ -3,4 +3,4 @@ Dockerfile
 READEME.md
 .dockerignore
 .git*
-*.sh
+*-dev.sh*

@@ -49,4 +49,4 @@ def send_staticfles(path):
 
 if __name__ == '__main__':
     dev=os.environ.get("DEV_MODE")
-    app.run(debug=True)
+    app.run(debug=True, port=3000)

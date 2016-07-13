@@ -1,6 +1,6 @@
 import os
 
-reload = (os.environ.get('DEV_MODE',0) == 0)
+reload = (os.environ.get('DEV_MODE', 0) == '1')
 user = 'www-data'
 bind = '0.0.0.0:3000'
 workers = 6
