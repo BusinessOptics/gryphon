@@ -6,6 +6,7 @@ from multiprocessing.pool import ThreadPool
 import re
 import base64
 import time
+import random
 
 boto3.setup_default_session(region_name='us-east-1')
 ecs = boto3.client('ecs')
@@ -49,7 +50,7 @@ def get_task_definition(arn):
             break
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == 'ThrottlingException':
-                time.sleep(1 * count)
+                time.sleep(1 * count*random.random())
                 count += 1
                 if count > 10:
                     raise
