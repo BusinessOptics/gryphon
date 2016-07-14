@@ -1,6 +1,8 @@
 ECS Cluster Viewer
 ==================
 
+<img src="/mascot.png?raw=true" width="500">
+
 #Description
 
 This is a simply designed web-based application to alow users to view a clear interface for the AWS console showinfg information such as tasks running on each instance aswell as the commands to ssh into the instance or run the docker container for bug fixing
