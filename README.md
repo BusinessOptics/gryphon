@@ -5,7 +5,7 @@ ECS Cluster Viewer
 
 #Description
 
-This is a simply designed web-based application to alow users to view a clear interface for the AWS console showinfg information such as tasks running on each instance aswell as the commands to ssh into the instance or run the docker container for bug fixing
+This is a simply designed web-based application to allow users to view a clear interface for the AWS console showing information such as tasks running on each instance as well as the commands to ssh into the instance or run the docker container for bug fixing
 
 #Requirements
 
@@ -25,7 +25,7 @@ List of Scripts:
 	build.sh - builds the docker image
 	run-dev.sh - run the program in development mode (Flask with debug mode, no gunicorn)
 	push.sh - pushes the image to AWS ECR
-	entrypoint.sh - script run on container startup to start the server
+	entrypoint.sh - script run on container start-up to start the server
 
 # Configuration Requirements
 
@@ -34,7 +34,6 @@ Set the following Environment variables:
 	AWS_SECRET_ACCESS_KEY
 	AWS_ACCESS_KEY_ID
 	DEV_MODE (1 if in dev_mode, 0 otherwise)
-
 
 
 
