@@ -7,8 +7,6 @@ import re
 
 import boto3
 
-boto3.setup_default_session(region_name='us-east-1')
-
 ecs = boto3.client('ecs')
 ec2 = boto3.resource('ec2')
 auto_scaling = boto3.client('autoscaling')
