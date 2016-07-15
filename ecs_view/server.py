@@ -1,4 +1,4 @@
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template
 
 from aws_classes import *
 
@@ -12,8 +12,11 @@ def hello():
 @app.route("/cli/exec/<cluster>/<container>")
 def cli_exec(cluster, container):
     container_name = container
-    task_arn, ip = get_exec_info(cluster)
-    command = 'containerName="' + container_name + '"; ' + 'taskArn=' + task_arn + '; ' +\
+    task_arn, ip = get_exec_info(cluster, container)
+    if not(task_arn and ip):
+        return 'echo "Cluster or Container not found (Did you mistype?)"'
+
+    command = 'set -eux; containerName="' + container_name + '"; ' + 'taskArn=' + task_arn + '; ' +\
               'dockerCommand="CONTAINER_ID=\\`curl http://localhost:51678/v1/tasks?taskarn=${taskArn} | jq -r \\".Containers[] | select(.Name==\\\\\\"${containerName}\\\\\\").DockerId\\"\\`; sudo docker exec -it -u root \\${CONTAINER_ID} bash"; ' +\
               'ssh ' + ip + ' -t "set -ex; $dockerCommand"'
     return command
