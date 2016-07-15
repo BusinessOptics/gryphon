@@ -23,11 +23,19 @@ You may wish to get the exec command for a specific container for which you know
 
 If you wish to pipe this automatically into bash add this function to your .bash_profile
 
-    function griffoncurl {
+    function gryphoncurl {
         stty raw -echo ; ( curl $1 && cat ) | bash ; stty sane
     }
 
-Then call `griffoncurl 127.0.0.1/cli/exec/CLUSTER_NAME/CONTAINER_NAME` to immediately ssh in.
+Then call `gryphoncurl 127.0.0.1/cli/exec/CLUSTER_NAME/CONTAINER_NAME` to immediately ssh in.
+
+Alternatively if the url is predefined you may wish to define the function as follows:
+
+    function gryphon {
+        stty raw -echo ; ( curl BASE_URL/cli/exec/$1/$2 && cat ) | bash ; stty sane
+    }
+
+The calling `gryphon CLUSTER_NAME CONTAINER_NAME` will result in the same events.
 
 List of Scripts:
 
