@@ -67,23 +67,23 @@
                 <table class="chart">
                     <tr>
                         <td class="chart_col">cpu</td>
-                        <td class="resource_used chart_col">{{ instance.cpu_used }}</td>
+                        <td class="resource_used chart_col">{{ instance.used_resources.CPU }}</td>
                         <td class="bar_td">
-                            <div class="resource_bar" style="width:{{instance.cpu_perc}}%">
-                                {{instance.cpu_perc | round | int}}%
+                            <div class="resource_bar" style="width:{{instance.percentage_resources_used.CPU}}%">
+                                {{instance.percentage_resources_used.CPU | round | int}}%
                             </div>
                         </td>
-                        <td class="resource_remaining chart_col">{{ instance.cpu_rem }}</td>
+                        <td class="resource_remaining chart_col">{{ instance.remaining_resources.CPU }}</td>
                     </tr>
                     <tr>
                         <td class="chart_col">mem</td>
-                        <td class="resource_used chart_col">{{ instance.mem_used }}</td>
+                        <td class="resource_used chart_col">{{ instance.used_resources.MEMORY }}</td>
                         <td class="bar_td">
-                            <div class="resource_bar" style="width:{{instance.mem_perc}}%">
-                                {{instance.mem_perc | round | int}}%
+                            <div class="resource_bar" style="width:{{instance.percentage_resources_used.MEMORY}}%">
+                                {{instance.percentage_resources_used.MEMORY | round | int}}%
                             </div>
                         </td>
-                        <td class="resource_remaining chart_col">{{ instance.mem_rem }}</td>
+                        <td class="resource_remaining chart_col">{{ instance.remaining_resources.MEMORY }}</td>
                     </tr>
                 </table>
 
