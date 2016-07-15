@@ -9,7 +9,7 @@ Monitored/Celery Tasks
 
 Current State
 """
-
+import os
 from aws_classes import *
 from flask import Flask, render_template, send_from_directory
 
@@ -48,4 +48,5 @@ def send_staticfles(path):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    dev=os.environ.get("DEV_MODE")
+    app.run(debug=True, port=3000)
