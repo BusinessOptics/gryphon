@@ -9,6 +9,16 @@ def hello():
     return 'ok'
 
 
+@app.route("/cli/exec/<cluster>/<container>")
+def cli_exec(cluster, container):
+    container_name = container
+    task_arn, ip = get_exec_info(cluster)
+    command = 'containerName="' + container_name + '"; ' + 'taskArn=' + task_arn + '; ' +\
+              'dockerCommand="CONTAINER_ID=\\`curl http://localhost:51678/v1/tasks?taskarn=${taskArn} | jq -r \\".Containers[] | select(.Name==\\\\\\"${containerName}\\\\\\").DockerId\\"\\`; sudo docker exec -it -u root \\${CONTAINER_ID} bash"; ' +\
+              'ssh ' + ip + ' -t "set -ex; $dockerCommand"'
+    return command
+
+
 @app.route('/')
 def index():
     cluster_list = list_clusters()
