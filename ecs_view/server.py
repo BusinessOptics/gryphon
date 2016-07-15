@@ -28,5 +28,6 @@ def task_definitions():
     task_definitions = get_task_def_list()
     return render_template('definitions.html', task_definitions=task_definitions, should_exec=False, auth_data=authorization_data)
 
+
 if __name__ == '__main__':
     app.run(debug=True)
