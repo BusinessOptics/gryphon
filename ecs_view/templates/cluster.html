@@ -46,7 +46,7 @@
     <a class='action' href='/'><i class="fa fa-home"></i> index</a>
     {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/'~cluster.name %}
     {% include "consolebutton.html" %}
-    <h1><i class="fa fa-server"></i> {{cluster.name|title}} Cluster</h1>
+    <h1><a class="index-icon" href="/"><i class="fa fa-server"></i></a> {{cluster.name|title}} Cluster</h1>
 </div>
 <div class='overview'>
     <div class='instances-container'>

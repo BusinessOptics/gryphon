@@ -16,9 +16,9 @@ def cli_exec(cluster, container):
     if not(task_arn and ip):
         return 'echo "Cluster or Container not found (Did you mistype?)"'
 
-    command = 'set -eux; containerName="' + container_name + '"; ' + 'taskArn=' + task_arn + '; ' +\
+    command = 'echo set -eux; containerName="' + container_name + '"; ' + 'taskArn=' + task_arn + '; ' +\
               'dockerCommand="CONTAINER_ID=\\`curl http://localhost:51678/v1/tasks?taskarn=${taskArn} | jq -r \\".Containers[] | select(.Name==\\\\\\"${containerName}\\\\\\").DockerId\\"\\`; sudo docker exec -it -u root \\${CONTAINER_ID} bash"; ' +\
-              'ssh ' + ip + ' -t "set -ex; $dockerCommand"'
+              'ssh ' + ip + ' -t -t "set -ex; $dockerCommand"'
     return command
 
 

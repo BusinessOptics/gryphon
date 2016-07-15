@@ -237,3 +237,11 @@ p.action {
   color: rgb(170, 210, 141);
   border: none;
 }
+
+.index-icon {
+    color: white;
+}
+
+.index-icon:hover {
+    color: #75b348;
+}

@@ -19,6 +19,7 @@ Docker: Installation instructions can be found [here](https://docs.docker.com/en
 4. When you are finished give a keyboard intterupt to the terminal by pressing `ctrl-c` to stop the container
 5. (OPTIONAL) To remove the exited containers run `sudo docker rm $(sudo docker ps -q -f status=exited)`
 
+During run you may wish to get the exec command for a specific container and you know the cluster on which it run. cUrling 127.0.0.1/cli/exec/<cluster>/<container> will net this result.
 
 List of Scripts:
 
