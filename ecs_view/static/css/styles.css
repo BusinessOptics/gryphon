@@ -231,3 +231,9 @@ p.action {
 .pico-check table tr td input {
     margin: 0px;
 }
+
+.pico-content textarea {
+  background-color: black;
+  color: rgb(170, 210, 141);
+  border: none;
+}
