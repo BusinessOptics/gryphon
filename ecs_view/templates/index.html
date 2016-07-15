@@ -17,10 +17,10 @@
   <ul>
     {% for cluster in clusters %}
     <li>
-    <a target="_blank" href="cluster/{{cluster.name}}/">{{cluster.name|title}}</a>
-    {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/'~cluster.name %}
+    <a target="_blank" href="cluster/{{cluster.clusterName}}/">{{cluster.clusterName|title}}</a>
+    {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/'~cluster.clusterName %}
     {% include "consolebutton.html" %}
-    <a target="_blank" class="action" href="cluster/{{cluster.name}}/"><i class="fa fa-eye"></i> overview</a>
+    <a target="_blank" class="action" href="cluster/{{cluster.clusterName}}/"><i class="fa fa-eye"></i> overview</a>
     </li>
     {% endfor %}
   </table>
