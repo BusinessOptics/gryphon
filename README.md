@@ -19,7 +19,7 @@ Docker: Installation instructions can be found [here](https://docs.docker.com/en
 4. When you are finished give a keyboard intterupt to the terminal by pressing `ctrl-c` to stop the container
 5. (OPTIONAL) To remove the exited containers run `sudo docker rm $(sudo docker ps -q -f status=exited)`
 
-You may wish to get the exec command for a specific container for which you know the cluster on which it is running without loading the site. curling 127.0.0.1/cli/exec/<cluster>/<container> will net this result.
+You may wish to get the exec command for a specific container for which you know the cluster on which it is running without loading the site. running `curl 127.0.0.1/cli/exec/CLUSTER_NAME/CONTAINER_NAME` will net this result.
 
 If you wish to pipe this automatically into bash add this function to your .bash_profile
 
@@ -27,7 +27,7 @@ If you wish to pipe this automatically into bash add this function to your .bash
         stty raw -echo ; ( curl $1 && cat ) | bash ; stty sane
     }
 
-Then call griffoncurl 127.0.0.1/cli/exec/<cluster>/<container>
+Then call `griffoncurl 127.0.0.1/cli/exec/CLUSTER_NAME/CONTAINER_NAME` to immediately ssh in.
 
 List of Scripts:
 
