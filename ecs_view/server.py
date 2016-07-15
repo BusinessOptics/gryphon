@@ -11,7 +11,7 @@ def hello():
 
 @app.route('/')
 def index():
-    cluster_list = create_clusters()
+    cluster_list = list_clusters()
     return render_template('index.html', clusters=cluster_list)
 
 

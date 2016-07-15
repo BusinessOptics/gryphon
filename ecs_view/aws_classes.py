@@ -29,16 +29,12 @@ def get_authorization():
     return {'username': username, 'password': password, 'endpoint': proxy}
 
 
-def create_clusters():
+def list_clusters():
     clusters = []
     cluster_keys = ecs.list_clusters()['clusterArns']
     if not cluster_keys:
-        return None
-    cluster_info = ecs.describe_clusters(clusters=cluster_keys)['clusters']
-    for cluster in cluster_info:
-        c_arn = cluster['clusterArn']
-        clusters.append(Cluster(arn=c_arn, name=cluster['clusterName']))
-    return clusters
+        return []
+    return ecs.describe_clusters(clusters=cluster_keys)['clusters']
 
 
 @functools.lru_cache(maxsize=None)
