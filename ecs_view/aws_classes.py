@@ -49,25 +49,29 @@ def get_task_def_list():
     lst_all = ecs.list_task_definitions()
     lst_raw = lst_all['taskDefinitionArns']
     lst_token = lst_all.get('nextToken')
+
     while lst_token is not None:
         lst_info = ecs.list_task_definitions(nextToken=lst_token)
         lst_token = lst_info.get('nextToken')
         lst_raw = lst_raw + lst_info['taskDefinitionArns']
+
     task_fam_list = defaultdict(list)
     fam_to_rev = defaultdict(list)
     lst = []
+
     for arn in lst_raw:
-        result = re.match(r'arn:aws:ecs:us-east-1:667583086810:task-definition/(.+):(\d+)', arn)
+        result = re.match(r'arn:.*:task-definition/(.+):(\d+)', arn)
         if result:
             family, revision = result.groups()
-        fam_to_rev[family].append(int(revision))
+        fam_to_rev[family].append((int(revision), arn))
+
     for key in fam_to_rev.keys():
         temp_list = fam_to_rev[key]
         temp_list.sort(reverse=True)
         top_5 = temp_list[:5]
-        final_list = ["arn:aws:ecs:us-east-1:667583086810:task-definition/"+key+":"+str(num)
-                      for num in top_5]
+        final_list = [ arn for num, arn in top_5 ]
         lst = lst+final_list
+
     t_definitions = thread_pool.map(get_task_definition, lst)
     for definition in t_definitions:
         task_fam = definition['family']
