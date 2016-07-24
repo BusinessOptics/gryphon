@@ -12,8 +12,7 @@ ec2 = boto3.resource('ec2')
 auto_scaling = boto3.client('autoscaling')
 ecr = boto3.client('ecr')
 
-logger = logging.getLogger(__name__)
-
+logger = logging.getLogger()
 
 def get_authorization():
     authorization = ecr.get_authorization_token()['authorizationData'][0]
