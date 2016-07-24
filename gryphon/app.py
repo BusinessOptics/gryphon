@@ -1,9 +1,17 @@
 from flask import Flask, render_template, send_from_directory
 
+import sys
+import logging
+logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
+rootLogger = logging.getLogger()
+consoleHandler = logging.StreamHandler(sys.stdout)
+consoleHandler.setFormatter(logFormatter)
+rootLogger.addHandler(consoleHandler)
+logger.setLevel(logging.INFO)
+
 from aws_classes import *
 
 app = Flask(__name__)
-
 @app.route('/health')
 def hello():
     return 'ok'
