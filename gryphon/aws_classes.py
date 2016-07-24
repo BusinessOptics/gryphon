@@ -14,7 +14,6 @@ ecr = boto3.client('ecr')
 
 logger = logging.getLogger(__name__)
 
-thread_pool = ThreadPool(10)
 
 def get_authorization():
     authorization = ecr.get_authorization_token()['authorizationData'][0]
@@ -70,7 +69,7 @@ def get_task_def_list():
         final_list = [ arn for num, arn in top_5 ]
         lst = lst+final_list
 
-    t_definitions = thread_pool.map(get_task_definition, lst)
+    t_definitions = map(get_task_definition, lst)
     for definition in t_definitions:
         task_fam = definition['family']
         arn = definition['taskDefinitionArn']
@@ -149,7 +148,7 @@ class Cluster:
 
         families = defaultdict(list)
         cont_defs_by_task_defs = defaultdict(list)
-        t_definitions = thread_pool.map(get_task_definition, task_dict.keys())
+        t_definitions = map(get_task_definition, task_dict.keys())
         for definition in t_definitions:
             task_def_arn = definition['taskDefinitionArn']
             task_defs[task_def_arn] = TaskDefinition(arn=task_def_arn,
