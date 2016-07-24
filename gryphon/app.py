@@ -7,7 +7,7 @@ rootLogger = logging.getLogger()
 consoleHandler = logging.StreamHandler(sys.stdout)
 consoleHandler.setFormatter(logFormatter)
 rootLogger.addHandler(consoleHandler)
-logger.setLevel(logging.INFO)
+rootLogger.setLevel(logging.INFO)
 
 from aws_classes import *
 
