@@ -1,7 +1,7 @@
 Gryphon Cluster Viewer
 ======================
 
-AWS Elastic Container Service Interface
+AWS EC2 Container Service Interface
 
 <img src="/mascot.png?raw=true" width="500">
 
