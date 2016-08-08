@@ -258,7 +258,9 @@ class Instance:
             self.auto_scaling_group = ""
             self.life_cycle_state = ""
 
-        tags = {value['Key']: value['Value'] for value in ec2_instance.tags}
+        tag_list = ec2_instance.tags or []
+
+        tags = {value['Key']: value['Value'] for value in tag_list}
         self.name = tags.get('Name', '')
 
         resource_keys = ["CPU", "MEMORY"]
