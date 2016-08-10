@@ -130,6 +130,9 @@ class Cluster:
         logger.info("Starting retrieving tasks list")
         task_keys = list_all_children(ecs.list_tasks, 'taskArns', cluster=self.name)
 
+        if not task_keys:
+            return
+
         logger.info("Describes tasks")
         task_info = ecs.describe_tasks(cluster=self.name, tasks=task_keys)['tasks']
         cont_inst_arn = defaultdict(list)
