@@ -14,6 +14,26 @@ ecr = boto3.client('ecr')
 
 logger = logging.getLogger()
 
+def list_all_children(function, child_field, *args, **kwargs):
+    """
+    Given a standard AWS boto list_* function this will return all the child
+    objects taking possible paging into account.
+    """
+    def innerFn():
+        first_response = function(*args, **kwargs)
+        for child in first_response[child_field]:
+            yield child
+
+        next_token = first_response.get('nextToken')
+
+        while next_token:
+            response = function(*args, nextToken=next_token, **kwargs)
+            next_token = response.get('nextToken')
+            for child in response[child_field]:
+                yield child
+
+    return list(innerFn())
+
 def get_authorization():
     authorization = ecr.get_authorization_token()['authorizationData'][0]
     encoded_token = authorization['authorizationToken']
@@ -42,14 +62,10 @@ def get_task_definition(arn):
 
 
 def get_task_def_list():
-    lst_all = ecs.list_task_definitions()
-    lst_raw = lst_all['taskDefinitionArns']
-    lst_token = lst_all.get('nextToken')
-
-    while lst_token is not None:
-        lst_info = ecs.list_task_definitions(nextToken=lst_token)
-        lst_token = lst_info.get('nextToken')
-        lst_raw = lst_raw + lst_info['taskDefinitionArns']
+    lst_raw = list_all_children(
+                ecs.list_task_definitions,
+                'taskDefinitionArns'
+                )
 
     task_fam_list = defaultdict(list)
     fam_to_rev = defaultdict(list)
@@ -112,21 +128,20 @@ class Cluster:
         container_defs = {}
 
         logger.info("Starting retrieving tasks list")
-        task_info = ecs.list_tasks(cluster=self.name)
-        task_keys = task_info['taskArns']
-        task_next_token = task_info.get('nextToken')
-        if not task_keys:
-            return
-        while task_next_token is not None:
-            logger.info("Continue retrieving tasks list")
-            task_info = ecs.list_tasks(cluster=self.name, nextToken=task_next_token)
-            task_next_token = task_info.get('nextToken')
-            task_keys = task_keys + task_info['taskArns']
+        task_keys = list_all_children(ecs.list_tasks, 'taskArns', cluster=self.name)
 
         logger.info("Describes tasks")
         task_info = ecs.describe_tasks(cluster=self.name, tasks=task_keys)['tasks']
         cont_inst_arn = defaultdict(list)
         task_dict = defaultdict(list)
+
+        all_container_instances = list_all_children(
+                ecs.list_container_instances,
+                'containerInstanceArns',
+                cluster=self.name)
+
+        for ci_arn in all_container_instances:
+            cont_inst_arn[ci_arn] = []
 
         for task in task_info:
             task_arn = task['taskArn']
