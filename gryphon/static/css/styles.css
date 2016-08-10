@@ -30,9 +30,15 @@ h2 {
     font-weight: normal;
 }
 
-.header h1 i {
+.header h1 a i.fa-chevron-circle-left {
+    color: #ececec;
     border-right: 2px solid #ececec;
     padding-right: 8px;
+    margin-right: 8px;
+}
+
+.header h1 a i.fa-chevron-circle-left:hover {
+    color: #75b348;
 }
 
 .overview {
