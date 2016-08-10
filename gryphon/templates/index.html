@@ -9,7 +9,7 @@
 <div class="header">
   {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters' %}
   {% include "consolebutton.html" %}
-  <a target="_blank" class="action" href="/task_definitions"><i class="fa fa-tasks"></i> Task definitions</a>
+  <a class="action" href="/task_definitions"><i class="fa fa-tasks"></i> Task definitions</a>
   <h1><i class="fa fa-cloud"></i> ECS Overview</h1>
 </div>
 <div class="index-list">
@@ -17,10 +17,10 @@
   <ul>
     {% for cluster in clusters %}
     <li>
-    <a target="_blank" href="cluster/{{cluster.clusterName}}/">{{cluster.clusterName|title}}</a>
+    <a href="cluster/{{cluster.clusterName}}/">{{cluster.clusterName|title}}</a>
     {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/'~cluster.clusterName %}
     {% include "consolebutton.html" %}
-    <a target="_blank" class="action" href="cluster/{{cluster.clusterName}}/"><i class="fa fa-eye"></i> overview</a>
+    <a class="action" href="cluster/{{cluster.clusterName}}/"><i class="fa fa-eye"></i> overview</a>
     </li>
     {% endfor %}
   </table>
