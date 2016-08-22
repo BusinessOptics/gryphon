@@ -65,7 +65,7 @@
                     {% include "consolebutton.html" %}
                     {% set container_def = task_def.container_defs[0] %}
                     {% include "runbutton.html" %}
-                    {{family.name}} - {{task_def.revision}}
+                    {{family.name}}:{{task_def.revision}}
                 </div>
             {% endfor %}
         </div>
