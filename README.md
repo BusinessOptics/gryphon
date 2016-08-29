@@ -31,4 +31,28 @@ docker run \
   businessoptics/gryphon
 ```
 
-Gryphon uses boto to communicate with AWS so if you run it on ECS with a task role it can use that task role's AWS credentials automatically.
+Gryphon uses boto to communicate with AWS so if you run it on ECS with a task role it can use that task role's AWS credentials automatically. The task role, or the credentials require at least the rights of the below IAM policy.
+
+```json
+{
+    "Version": "<VERSION-DATE>",
+    "Statement": [
+        {
+            "Sid": "<StmtXXXXXX>",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:Describe*",
+                "ecs:List*",
+                "ecs:Describe*",
+                "ec2:List*",
+                "autoscaling:Describe*",
+                "autoscaling:List*",
+                "ecr:GetAuthorizationToken"
+            ],
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+}
+```
