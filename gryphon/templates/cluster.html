@@ -84,6 +84,20 @@
                         </td>
                         <td class="resource_remaining chart_col">{{ instance.remaining_resources.MEMORY }}</td>
                     </tr>
+                    <tr>
+                        <td class="chart_col">ports</td>
+                        <td class="chart_col resource_used"></td>
+                        <td  colspan=1>
+				                  {% for task in instance.tasks %}
+                          {% for container in task.containers %}
+                          {% if container.host_port %}
+                            <span class='port'>:{{container.host_port}}</span>
+                          {% endif %}
+                          {% endfor %}
+                          {% endfor %}
+			                  </td>
+                        <td class="chart_col resource_remaining"></td>
+                    </tr>
                 </table>
 
                 <div class="uptime">
@@ -100,7 +114,7 @@
                 </div>
 
                 {% for task in instance.tasks %}
-                    {% include "task.html" %}
+                  {% include "task.html" %}
                 {% endfor %}
             </div>
             {% endfor %}
