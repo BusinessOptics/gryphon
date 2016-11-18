@@ -156,7 +156,7 @@ class Cluster:
             for cont in task['containers']:
                 container_arn = cont['containerArn']
                 containers[container_arn] = Container(arn=container_arn,
-                                                      name=cont['name'],
+                                                      container=cont,
                                                       task=tasks[task_arn],
                                                       status=cont['lastStatus'])
                 conts.append(containers[container_arn])
@@ -304,9 +304,16 @@ class Instance:
 
 
 class Container:
-    def __init__(self, arn=None, name=None, task=None, status=None, container_def=None):
+    def __init__(self, arn=None, container=None, task=None, status=None, container_def=None):
         self.arn = arn
-        self.name = name
+        self.name = container['name']
+
+        network_bindings = container['networkBindings']
+
+        self.host_port = None
+        if network_bindings:
+            self.host_port = network_bindings[0]['hostPort']
+
         self.task = task
         self.status = status
         self.container_def = container_def

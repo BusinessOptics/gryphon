@@ -145,6 +145,11 @@ ul.container-list li {
     border: 1px solid #75b348;
 }
 
+.port {
+  margin-left: 0.1em;
+  color: darkgrey;
+  font-size: 0.7em;
+}
 
 .index-list {
     padding: 1em;

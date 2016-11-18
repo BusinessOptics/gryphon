@@ -11,7 +11,7 @@
         {% for container in task.containers %}
         {% if container.status %}
         <li>
-            {{container.name}}
+        {{container.name}}{% if container.host_port %}<span class='port'>:{{container.host_port}}</span>{% endif %}
             {% set container_def = container.container_def %}
             {% include "runbutton.html" %}
             <span class="action"
