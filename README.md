@@ -60,4 +60,4 @@ Gryphon uses boto to communicate with AWS so if you run it on ECS with a task ro
 
 **Credits**
 
-Thanks to the wonderful Lauren Dawson aka Iguanamouth for the base image of the mascot. Please check out here work [http://lizardshuffle.tumblr.com/](here).
+Thanks to the wonderful Lauren Dawson aka Iguanamouth for the base image of the mascot. Please check out her work [here](http://lizardshuffle.tumblr.com/).
