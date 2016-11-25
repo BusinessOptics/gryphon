@@ -182,6 +182,7 @@ class Cluster:
                 environments = {env['name']: env['value'] for env in cont_def['environment']}
                 conts = [cont for cont in containers.values() if
                          cont.name == container_def_name]
+                print(cont_def)
                 temp_container = ContainerDefinition(name=container_def_name,
                                                      image=cont_def['image'],
                                                      task_definition=task_defs[task_def_arn],
@@ -308,8 +309,7 @@ class Container:
         self.arn = arn
         self.name = container['name']
 
-        network_bindings = container['networkBindings']
-
+        network_bindings = container.get('networkBindings', [])
         self.host_port = None
         if network_bindings:
             self.host_port = network_bindings[0]['hostPort']
@@ -342,4 +342,4 @@ class ContainerDefinition:
         self.task_definition = task_definition
         self.containers = containers
         self.environments = environments
-
+        print(name, task_definition)
