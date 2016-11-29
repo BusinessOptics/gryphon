@@ -19,7 +19,7 @@
     function setTime(d, elem) {
         var id = setInterval(frame, 100);
         function frame() {
-            elem.innerHTML = 'uptime: '+getTime(d)
+            elem.innerHTML = ''+getTime(d)
         }
     }
 
@@ -98,20 +98,26 @@
 			                  </td>
                         <td class="chart_col resource_remaining"></td>
                     </tr>
+                    <tr>
+                        <td class="chart_col">uptime</td>
+                        <td class="chart_col resource_used"></td>
+                        <td  colspan=1>
+                          <span class="time" id="time-{{instance.id}}"></span>
+                          <script>
+                              var launch = new Date({{instance.launch_time.year}},
+                                               {{instance.launch_time.month}}-1,
+                                               {{instance.launch_time.day}},
+                                               {{instance.launch_time.hour}},
+                                               {{instance.launch_time.minute}},
+                                               {{instance.launch_time.second}});
+                              setTime(launch, document.getElementById("time-{{instance.id}}"));
+                          </script>
+			                  </td>
+                        <td class="chart_col resource_remaining"></td>
+                    </tr>
+
                 </table>
 
-                <div class="uptime">
-                    <p  class="time" id="time-{{instance.id}}"></p>
-                    <script>
-                        var launch = new Date({{instance.launch_time.year}},
-                                         {{instance.launch_time.month}}-1,
-                                         {{instance.launch_time.day}},
-                                         {{instance.launch_time.hour}},
-                                         {{instance.launch_time.minute}},
-                                         {{instance.launch_time.second}});
-                        setTime(launch, document.getElementById("time-{{instance.id}}"));
-                    </script>
-                </div>
 
                 {% for task in instance.tasks %}
                   {% include "task.html" %}
