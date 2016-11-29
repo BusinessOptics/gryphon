@@ -220,10 +220,13 @@ p.action {
 .pending {
     background-color: #F7E482;
     float: right;
-    border-radius: 4px;
+    border-radius: 2px;
     font-size: small;
-    padding: 1px;
-    border: 1px solid #333;
+    padding: 0px 3px;
+    color: #888828;
+    margin-left:3px;
+    border: 1px solid #F7E482;
+    height:14px;
 }
 
 .pico-copied-note, .pico-note {
