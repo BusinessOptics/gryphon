@@ -1,19 +1,22 @@
-from flask import Flask, render_template, send_from_directory
-
 import sys
 import logging
-logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
+logFormatter = logging.Formatter(
+    "%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s"
+    )
 rootLogger = logging.getLogger()
 consoleHandler = logging.StreamHandler(sys.stdout)
 consoleHandler.setFormatter(logFormatter)
 rootLogger.addHandler(consoleHandler)
 rootLogger.setLevel(logging.INFO)
 
-from aws_classes import *
+from flask import Flask, render_template
+from aws_classes import Cluster, get_authorization, list_clusters, get_task_def_list
 
 app = Flask(__name__)
+
+
 @app.route('/health')
-def hello():
+def health():
     return 'ok'
 
 
@@ -34,7 +37,10 @@ def cluster(cluster_name):
 def task_definitions():
     authorization_data = get_authorization()
     task_definitions = get_task_def_list()
-    return render_template('definitions.html', task_definitions=task_definitions, should_exec=False, auth_data=authorization_data)
+    return render_template('definitions.html',
+                           task_definitions=task_definitions,
+                           should_exec=False,
+                           auth_data=authorization_data)
 
 
 if __name__ == '__main__':
