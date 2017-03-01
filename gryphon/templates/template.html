@@ -1,61 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" type="text/css" href="/static/css/styles.css">
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
-    <link rel="shortcut icon" href="/static/favicon.ico">
-    <script src="/static/js/picoModal.js"></script>
-    <script>
-        function copyToClipboard(){
-            textArea = document.getElementsByTagName("textarea");
-            textArea[0].select();
-            document.execCommand("copy");
-            pico = document.getElementsByClassName("pico-copied-note");
-            pico[0].innerHTML = "Copied";
-        }
+  <meta charset="UTF-8">
+  <title>{% block title %}{% endblock %}</title>
+  <link rel="stylesheet" type="text/css" href="/static/css/styles.css">
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="shortcut icon" href="/static/favicon.ico">
+  <script src="/static/js/picoModal.js"></script>
+  <script>
+    function copyToClipboard() {
+      textArea = document.getElementsByTagName("textarea");
+      textArea[0].select();
+      document.execCommand("copy");
+      pico = document.getElementsByClassName("pico-copied-note");
+      pico[0].innerHTML = "Copied";
+    }
 
-        function toggleRoot(){
-            textArea = document.getElementsByTagName("textarea");
-            content = textArea[0].innerHTML;
-            pos = content.search("-it -u root");
-            if(pos == -1) content = content.replace("-it","-it -u root");
-            else content = content.replace("-it -u root","-it");
-            textArea[0].innerHTML = content;
-        }
+    function toggleRoot() { 
+      textArea = document.getElementsByTagName("textarea");
+      content = textArea[0].innerHTML;
+      pos = content.search("-it -u root");
+      if (pos == -1) {
+        content = content.replace("-it","-it -u root");
+      } else { 
+        content = content.replace("-it -u root","-it");
+      }
+      
+      textArea[0].innerHTML = content;
+    }
 
-        function generatePicoModal(command, height, hasRoot){
-            contentString = '<pre><textarea style="width:100%; height:'+height+';">'+command+'</textarea></pre>'
-                    +'<div class="action" onclick="copyToClipboard()">copy to clipboard</div>';
-            if(hasRoot){
-                contentString=contentString +'<div class="pico-check"><table><tr>'
-                                            +'<td><input type="checkbox" checked=True onchange="toggleRoot()"></td>'
-                                            +'<td><p class="pico-note">root</p></td>'
-                                            +'</tr></table></div>'
-            }
-            contentString = contentString+'<p class="pico-copied-note"></p>';
-            return picoModal({
-            content: contentString,
-            width: '50%'
-            }).afterClose(function (modal) { modal.destroy(); });
-        }
+    function generatePicoModal(command, height, hasRoot) {
+      contentString = '<pre><textarea style="width:100%; height:'+height+';">'+command+'</textarea></pre>'
+              +'<div class="action" onclick="copyToClipboard()">copy to clipboard</div>';
+      if(hasRoot){
+          contentString=contentString +'<div class="pico-check"><table><tr>'
+                                      +'<td><input type="checkbox" checked=True onchange="toggleRoot()"></td>'
+                                      +'<td><p class="pico-note">root</p></td>'
+                                      +'</tr></table></div>'
+      }
+      contentString = contentString+'<p class="pico-copied-note"></p>';
+      return picoModal({
+        content: contentString,
+        width: '50%'
+      }).afterClose(function(modal){ modal.destroy(); });
+    }
 
-        function run(image_name, env, auth_data){
-            envVariables = "";
-            Object.keys(env).forEach(function(key,index) {
-                envVariables = envVariables + "-e " + key + "=" + env[key] + " ";
-            });
+    function run(image_name, env, auth_data) {
+      var envVariables = "";
+      Object.keys(env).forEach(function(key,index) {
+          envVariables = envVariables + "-e " + key + "=\'" + env[key] + "\' ";
+      });
 
-            var command = "docker login -u "+auth_data["username"]+" -p "+auth_data["password"]+" -e none "+auth_data["endpoint"]
-            command = command+";sudo docker run -it -u root " + envVariables + image_name + " bash";
+      var command = "docker login -u "+auth_data["username"]+" -p "+auth_data["password"]+" -e none "+auth_data["endpoint"]
+      command = command+";sudo docker run -it -u root " + envVariables + image_name + " bash";
 
-            generatePicoModal(command, "10em", true).show();
-        }
+      generatePicoModal(command, "10em", true).show();
+    }
 
-        {% block scripts %}
-        {% endblock %}
-    </script>
+    function execContainer(ip, task, containerName) {
+
+      var command = 'containerName="'+containerName+'";\n' +
+        'taskArn=' + task + ';\n' +
+        'dockerCommand="CONTAINER_ID=\\`curl http://localhost:51678/v1/tasks?taskarn=\${taskArn} | jq -r \\".Containers[] | select(.Name==\\\\\\"\${containerName}\\\\\\").DockerId\\"\\`; sudo docker exec -it -u root \\${CONTAINER_ID} bash";\n' +
+        'ssh ' + ip + ' -t "set -ex; $dockerCommand"\n'
+
+        generatePicoModal(command, "10em", true).show();
+    }
+
+    function attachContainer(ip, task, containerName) {
+
+      var command = 'containerName="'+containerName+'";\n' +
+        'taskArn=' + task + ';\n' +
+        'dockerCommand="CONTAINER_ID=\\`curl http://localhost:51678/v1/tasks?taskarn=\${taskArn} | jq -r \\".Containers[] | select(.Name==\\\\\\"\${containerName}\\\\\\").DockerId\\"\\`; sudo docker attach --sig-proxy=false \\${CONTAINER_ID}";\n' +
+        'ssh ' + ip + ' -t "set -ex; $dockerCommand"\n'
+
+        generatePicoModal(command, "10em", false).show();
+    }
+    
+    function taskAction(select, imageName, env, authData, ip, task, containerName) {
+      var action = select.value;
+
+      if (action == "exec") {
+        execContainer(ip, task, containerName);
+      } else if (action == "attach") {
+        attachContainer(ip, task, containerName);
+      } else if (action == "run") {
+        run(imageName, env, authData);
+      }
+
+      if (action != "action") {
+        select.value= "action"
+      }
+    }
+
+    function ssh(ip) {
+      var command = "ssh " + ip;
+      generatePicoModal(command, "2em", false).show();
+    }
+
+    function setTime(d, elem) {
+      function frame() {
+        elem.innerHTML = '' + getTime(d)
+      }
+      setInterval(frame, 100);
+    }
+
+    function getTime(d) {
+      var oneDay = 24*60*60*1000;	// hours*minutes*seconds*milliseconds
+      var cur = new Date()
+      var epoch = new Date(cur.getUTCFullYear(), cur.getUTCMonth(), cur.getUTCDate(),
+                           cur.getUTCHours(), cur.getUTCMinutes(), cur.getUTCSeconds());
+      var dat = epoch-d;
+
+      var diffDays = Math.floor((dat)/(oneDay));
+      var diffHours = Math.floor((dat)/(oneDay/24)-diffDays*24);
+      var diffMins = Math.floor((dat)/(60000)-diffHours*60-diffDays*24*60);
+      var diffSecs = Math.floor((dat)/(1000)-diffMins*60-diffHours*60*60-diffDays*24*60*60);
+      return diffDays+'d '+timePad(diffHours)+':'+timePad(diffMins)+':'+timePad(diffSecs);
+    }
+
+    function timePad(t) {
+      return String("00" + t).slice(-2)
+    }
+
+    window.onload = function(){
+      
+    }
+    {% block scripts %}
+    {% endblock %}
+  </script>
 </head>
 <body>
 {% block body %}
