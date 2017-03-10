@@ -4,9 +4,23 @@
 {% endblock %}
 {% block body %}
 <div class='header'>
-	{% set link = 'https://console.aws.amazon.com/ecs/home?region={region}#/clusters/{name}'.format(region=region, name=cluster.name) %}
+  {% set link='https://console.aws.amazon.com/ecs/home?region={region}#/clusters/{name}'.format(region=region, name=cluster.name) %}
   {% include "consolebutton.html" %}
-  <h1><a href='/'><i class="fa fa-chevron-circle-left"></i></a><i class="fa fa-server"></i> {{cluster.name|title}} Cluster</h1>
+  <a href="/ssh_parameters?next=/cluster/{{cluster.name}}/" class="action">
+    <i class="fa fa-terminal"></i>
+    change ssh
+  </a>
+  <div class="ssh-signature">
+    ssh {{ssh_signature}}&lt;host&gt;
+  </div>
+  <h1>
+    <a href='/'>
+      <i class="fa fa-chevron-circle-left"></i>
+    </a>
+    <i class="fa fa-server"></i> 
+    {{cluster.name|title}} 
+    Cluster
+  </h1>
 </div>
 <div class='overview'>
   <div class='instances-container'>
@@ -65,13 +79,13 @@
             <td  colspan=1>
               <span class="time" id="time-{{instance.id}}"></span>
               <script>
-                var launch = new Date({{instance.launch_time.year}},
-                    {{instance.launch_time.month}}-1,
-                    {{instance.launch_time.day}},
-                    {{instance.launch_time.hour}},
-                    {{instance.launch_time.minute}},
-                    {{instance.launch_time.second}});
-                setTime(launch, document.getElementById("time-{{instance.id}}"));
+var launch = new Date({{instance.launch_time.year}},
+    {{instance.launch_time.month}}-1,
+    {{instance.launch_time.day}},
+    {{instance.launch_time.hour}},
+    {{instance.launch_time.minute}},
+    {{instance.launch_time.second}});
+setTime(launch, document.getElementById("time-{{instance.id}}"));
               </script>
             </td>
             <td class="chart_col resource_remaining"></td>
