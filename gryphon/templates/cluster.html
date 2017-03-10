@@ -4,7 +4,7 @@
 {% endblock %}
 {% block body %}
 <div class='header'>
-  {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/'~cluster.name %}
+	{% set link = 'https://console.aws.amazon.com/ecs/home?region={region}#/clusters/{name}'.format(region=region, name=cluster.name) %}
   {% include "consolebutton.html" %}
   <h1><a href='/'><i class="fa fa-chevron-circle-left"></i></a><i class="fa fa-server"></i> {{cluster.name|title}} Cluster</h1>
 </div>

@@ -1,5 +1,4 @@
 from collections import defaultdict
-from multiprocessing.pool import ThreadPool
 import base64
 import functools
 import logging
@@ -11,6 +10,9 @@ ecs = boto3.client('ecs')
 ec2 = boto3.resource('ec2')
 auto_scaling = boto3.client('autoscaling')
 ecr = boto3.client('ecr')
+boto_session = boto3.session.Session()
+
+region = boto_session.region_name
 
 logger = logging.getLogger()
 
@@ -46,7 +48,6 @@ def get_authorization():
 
 
 def list_clusters():
-    clusters = []
     cluster_keys = ecs.list_clusters()['clusterArns']
     if not cluster_keys:
         return []
@@ -81,7 +82,7 @@ def get_task_def_list():
         temp_list = fam_to_rev[key]
         temp_list.sort(reverse=True)
         top_5 = temp_list[:5]
-        final_list = [ arn for num, arn in top_5 ]
+        final_list = [arn for _, arn in top_5]
         lst = lst+final_list
 
     t_definitions = map(get_task_definition, lst)
