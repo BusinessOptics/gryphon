@@ -1,76 +1,75 @@
 {% extends "template.html" %}
 {% block title %}Task Definitions Overview{% endblock %}
 {% block scripts %}
+function hideElements(name){
+  parent = document.getElementById(name);
+  children = parent.getElementsByClassName("task");
+  var i;
+  for (i = 0; i < children.length; i++) {
+    children[i].style.display = "none";
+  }
+  var button = parent.getElementsByClassName("toggle")[0];
+  button.innerHTML = "show";
+  button.onclick = function(){ showElements(name); };
+}
 
-    function hideElements(name){
-        parent = document.getElementById(name);
-        children = parent.getElementsByClassName("task");
-        var i;
-        for (i = 0; i < children.length; i++) {
-            children[i].style.display = "none";
-        }
-        var button = parent.getElementsByClassName("toggle")[0];
-        button.innerHTML = "show";
-        button.onclick = function(){ showElements(name); };
-    }
+function showElements(name){
+  parent = document.getElementById(name);
+  children = parent.getElementsByClassName("task");
+  var i;
+  for (i = 0; i < children.length; i++) {
+    children[i].style.display = "block";
+  }
+  var button = parent.getElementsByClassName("toggle")[0];
+  button.innerHTML = "hide";
+  button.onclick = function(){ hideElements(name); };
+}
 
-    function showElements(name){
-        parent = document.getElementById(name);
-        children = parent.getElementsByClassName("task");
-        var i;
-        for (i = 0; i < children.length; i++) {
-            children[i].style.display = "block";
-        }
-        var button = parent.getElementsByClassName("toggle")[0];
-        button.innerHTML = "hide";
-        button.onclick = function(){ hideElements(name); };
-    }
+function hideAllElements(){
+  var all = document.getElementsByClassName("task-definition");
+  var i;
+  for (i = 0; i < all.length; i++) {
+    hideElements(all[i].id)
+  }
+}
 
-    function hideAllElements(){
-        var all = document.getElementsByClassName("task-definition");
-        var i;
-        for (i = 0; i < all.length; i++) {
-            hideElements(all[i].id)
-        }
-    }
-
-    function showAllElements(){
-        var all = document.getElementsByClassName("task-definition");
-        var i;
-        for (i = 0; i < all.length; i++) {
-            showElements(all[i].id)
-        }
-    }
+function showAllElements(){
+  var all = document.getElementsByClassName("task-definition");
+  var i;
+  for (i = 0; i < all.length; i++) {
+    showElements(all[i].id)
+  }
+}
 {% endblock %}
 {% block body %}
 <div class='header'>
-    {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/taskDefinitions' %}
-    {% include "consolebutton.html" %}
-    <h1><a href='/'><i class="fa fa-chevron-circle-left"></i></a><i class="fa fa-tasks"></i> Task Definitions</h1>
+  {% set link = 'https://console.aws.amazon.com/ecs/home?region={region}#/taskDefinitions'.format(region=region) %}
+  {% include "consolebutton.html" %}
+  <h1><a href='/'><i class="fa fa-chevron-circle-left"></i></a><i class="fa fa-tasks"></i> Task Definitions</h1>
 </div>
 <div class='overview'>
-    <div class="task-definition-container">
-        <div class="action" onclick="showAllElements()">show all</div>
-        <div class="action" onclick="hideAllElements()">hide all</div>
-        <h2>Task Definitions</h2>
-        {% for family in task_definitions %}
-        <div class="task-definition" id="{{family.name}}" >
-            <span class="action toggle" onclick="showElements('{{family.name}}')">show</span>
-            {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/taskDefinitions/'~family.name %}
-            {% include "consolebutton.html" %}
-            <span>{{family.name}}</span>
-            {% for task_def in family.task_defs %}
-                <div class="task none">
-                    {% set link = 'https://console.aws.amazon.com/ecs/home?region=us-east-1#/taskDefinitions/'~family.name~'/'~task_def.revision %}
-                    {% include "consolebutton.html" %}
-                    {% set container_def = task_def.container_defs[0] %}
-                    {% include "runbutton.html" %}
-                    {{family.name}}:{{task_def.revision}}
-                </div>
-            {% endfor %}
-        </div>
-        {% endfor %}
+  <div class="task-definition-container">
+    <div class="action" onclick="showAllElements()">show all</div>
+    <div class="action" onclick="hideAllElements()">hide all</div>
+    <h2>Task Definitions</h2>
+    {% for family in task_definitions %}
+    <div class="task-definition" id="{{family.name}}" >
+      <span class="action toggle" onclick="showElements('{{family.name}}')">show</span>
+      {% set link = 'https://console.aws.amazon.com/ecs/home?region={region}#/taskDefinitions/{name}'.format(region=region, name=family.name) %}
+      {% include "consolebutton.html" %}
+      <span>{{family.name}}</span>
+      {% for task_def in family.task_defs %}
+      <div class="task none">
+        {% set link = 'https://console.aws.amazon.com/ecs/home?region={region}#/taskDefinitions/{name}/{revision}'.format(region=region, name=family.name, revision=task_def.revision) %}
+        {% include "consolebutton.html" %}
+        {% set container_def = task_def.container_defs[0] %}
+        {% include "runbutton.html" %}
+        {{family.name}}:{{task_def.revision}}
+      </div>
+      {% endfor %}
     </div>
+    {% endfor %}
+  </div>
 
 </div>
 {% endblock %}
