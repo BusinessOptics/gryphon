@@ -1,0 +1,28 @@
+{% extends "template.html" %}
+
+{% block title %}Set SSH parameters{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block body %}
+<div class="header">
+  <h1>
+    <a href='/'><i class="fa fa-chevron-circle-left"></i></a>
+    <i class="fa fa-terminal"></i> SSH parameters</h1>
+</div>
+<div>
+  <div class='ssh-parameters-dialog'>
+    <form method='POST'>    
+      <h3>SSH Signature</h3>
+      <div>
+        ssh <input type='text' name='signature' value={{ssh_signature|tojson}}> 0.0.0.0
+      </div>
+      <div>
+        <button name='save'>Save</button>
+        <button>Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

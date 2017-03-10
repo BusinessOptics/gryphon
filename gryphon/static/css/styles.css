@@ -244,7 +244,7 @@ p.action {
 
 .pico-copied-note, .pico-note {
   font-size: small;
-  margin: 0px;
+  margin: 0;
 }
 
 .pico-check {
@@ -256,11 +256,40 @@ p.action {
 }
 
 .pico-check table tr td input {
-  margin: 0px;
+  margin: 0;
 }
 
 .pico-content textarea {
   background-color: black;
-  color: rgb(170, 210, 141);
   border: none;
+  color: rgb(170, 210, 141);
+}
+
+.ssh-signature {
+  /*display: inline-block;*/
+  float: right;
+  margin: 5px;
+  font-size: 12px;
+}
+
+.ssh-parameters-dialog {
+  background-color: hsl(0, 0%, 20%);
+  color: #ececec;
+  margin: auto;
+  margin-top: 100px;
+  padding: 10px;
+  width: 400px;
+}
+
+.ssh-parameters-dialog input {
+  background-color: hsl(0, 0%, 20%);
+  color: #ececec;
+  border: 1px solid #ececec;
+  padding: 2px;
+  width: 20em;
+}
+
+.ssh-parameters-dialog form>div:last-child {
+  text-align: center;
+  margin-top: 1em;
 }

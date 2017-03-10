@@ -8,6 +8,8 @@
   <link rel="shortcut icon" href="/static/favicon.ico">
   <script src="/static/js/picoModal.js"></script>
   <script>
+    var sshArgs = {{ssh_signature|default("")|tojson}};
+    
     function copyToClipboard() {
       textArea = document.getElementsByTagName("textarea");
       textArea[0].select();
@@ -62,7 +64,7 @@
       var command = 'containerName="'+containerName+'";\n' +
         'taskArn=' + task + ';\n' +
         'dockerCommand="CONTAINER_ID=\\`curl http://localhost:51678/v1/tasks?taskarn=\${taskArn} | jq -r \\".Containers[] | select(.Name==\\\\\\"\${containerName}\\\\\\").DockerId\\"\\`; sudo docker exec -it -u root \\${CONTAINER_ID} bash";\n' +
-        'ssh ' + ip + ' -t "set -ex; $dockerCommand"\n'
+        'ssh ' + sshArgs + ip + ' -t "set -ex; $dockerCommand"\n'
 
         generatePicoModal(command, "10em", true).show();
     }
@@ -72,7 +74,7 @@
       var command = 'containerName="'+containerName+'";\n' +
         'taskArn=' + task + ';\n' +
         'dockerCommand="CONTAINER_ID=\\`curl http://localhost:51678/v1/tasks?taskarn=\${taskArn} | jq -r \\".Containers[] | select(.Name==\\\\\\"\${containerName}\\\\\\").DockerId\\"\\`; sudo docker attach --sig-proxy=false \\${CONTAINER_ID}";\n' +
-        'ssh ' + ip + ' -t "set -ex; $dockerCommand"\n'
+        'ssh ' + sshArgs + ip + ' -t "set -ex; $dockerCommand"\n'
 
         generatePicoModal(command, "10em", false).show();
     }
