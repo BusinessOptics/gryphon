@@ -1,0 +1,120 @@
+{% extends "template.html" %}
+{% block title %}{{cluster.name|title}} Cluster Overview{% endblock %}
+{% block scripts %}
+{% endblock %}
+{% block body %}
+<div class='header'>
+  {% set link='https://console.aws.amazon.com/ecs/home?region={region}#/clusters/{name}'.format(region=region, name=cluster.name) %}
+  {% include "consolebutton.html" %}
+  <a href="/ssh_parameters?next=/cluster/{{cluster.name}}/" class="action">
+    <i class="fa fa-terminal"></i>
+    change ssh
+  </a>
+  <div class="ssh-signature">
+    ssh {{ssh_signature}}&lt;host&gt;
+  </div>
+  <h1>
+    <a href='/'>
+      <i class="fa fa-chevron-circle-left"></i>
+    </a>
+    <i class="fa fa-server"></i> 
+    {{cluster.name|title}} 
+    Cluster
+  </h1>
+</div>
+<div class='overview'>
+  <div class='instances-container'>
+    <h2>Instances</h2>
+    <div class='instances'>
+      {% set instances = cluster.instances %}
+      {% for instance in instances %}
+      <div class='instance{% if instance.life_cycle_state == "Terminating:Wait" %}
+        terminating{% endif %}'>
+        {{instance.name}}
+        ({{instance.ip}})
+        <span>{{instance.type}}</span>
+
+        <a class="action" target='_blank' href='http://{{instance.ip}}:9080'>cAdvisor</a>
+
+        <span class="action" onclick="ssh('{{instance.ip}}')">ssh</span>
+
+        <table class="chart">
+          <tr>
+            <td class="chart_col">cpu</td>
+            <td class="resource_used chart_col">{{ instance.used_resources.CPU }}</td>
+            <td class="bar_td">
+              <div class="resource_bar" style="width:{{instance.percentage_resources_used.CPU}}%">
+                {{instance.percentage_resources_used.CPU | round | int}}%
+              </div>
+            </td>
+            <td class="resource_remaining chart_col">{{ instance.remaining_resources.CPU }}</td>
+          </tr>
+          <tr>
+            <td class="chart_col">mem</td>
+            <td class="resource_used chart_col">{{ instance.used_resources.MEMORY }}</td>
+            <td class="bar_td">
+              <div class="resource_bar" style="width:{{instance.percentage_resources_used.MEMORY}}%">
+                {{instance.percentage_resources_used.MEMORY | round | int}}%
+              </div>
+            </td>
+            <td class="resource_remaining chart_col">{{ instance.remaining_resources.MEMORY }}</td>
+          </tr>
+          <tr>
+            <td class="chart_col">ports</td>
+            <td class="chart_col resource_used"></td>
+            <td  colspan=1>
+              {% for task in instance.tasks %}
+              {% for container in task.containers %}
+              {% if container.host_port %}
+              <span class='port'>:{{container.host_port}}</span>
+              {% endif %}
+              {% endfor %}
+              {% endfor %}
+            </td>
+            <td class="chart_col resource_remaining"></td>
+          </tr>
+          <tr>
+            <td class="chart_col">uptime</td>
+            <td class="chart_col resource_used"></td>
+            <td  colspan=1>
+              <span class="time" id="time-{{instance.id}}"></span>
+              <script>
+var launch = new Date({{instance.launch_time.year}},
+    {{instance.launch_time.month}}-1,
+    {{instance.launch_time.day}},
+    {{instance.launch_time.hour}},
+    {{instance.launch_time.minute}},
+    {{instance.launch_time.second}});
+setTime(launch, document.getElementById("time-{{instance.id}}"));
+              </script>
+            </td>
+            <td class="chart_col resource_remaining"></td>
+          </tr>
+
+        </table>
+
+
+        {% for task in instance.tasks %}
+        {% include "task.html" %}
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class='families'>
+    <h2>Task families</h2>
+    {% set families = cluster.task_families %}
+    {% for family in families %}
+    <div class='family'>
+      {{family.name}}
+      {% for task_def in family.task_defs %}
+      {% for task in task_def.tasks %}
+      {% include "task.html" %}
+      {% endfor %}
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,295 @@
+body {
+  font-family: helvetica;
+  color: #333;
+  padding: 0px;
+  margin: 0px;
+}
+
+a {
+  color: #75b348;
+  text-decoration: none;
+}
+
+h2 {
+  margin: 0px 0px 0.25em;
+}
+
+.header {
+  background-color: hsl(0, 0%, 20%);
+  color: #ececec;
+  padding: 3px;
+}
+
+.header a.action {
+  margin: 5px;
+}
+
+.header h1 {
+  margin: 0px;
+  font-size: 22px;
+  font-weight: normal;
+}
+
+.header h1 a i.fa-chevron-circle-left {
+  color: #ececec;
+  border-right: 2px solid #ececec;
+  padding-right: 8px;
+  margin-right: 8px;
+}
+
+.header h1 a i.fa-chevron-circle-left:hover {
+  color: #75b348;
+}
+
+.overview {
+  display: flex;
+  justify-content: space-between;
+}
+
+.instances-container {
+  padding: 1em;
+  padding-right: 0px;
+  padding-bottom: 0em;
+}
+
+.task-definition-container {
+  padding: 1em;
+  padding-right: 1em;
+  padding-bottom: 0em;
+}
+
+.families {
+  padding: 1em;
+  padding-bottom: 0em;
+  min-width: 300px;
+  border-left: 1px solid #bbb;
+}
+
+.instances {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.task-definitions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  float:left;
+}
+
+.instance {
+  min-width: 350px;
+  float: left;
+  margin-right: 1em;
+  margin-bottom: 1em;
+  padding: 0.5em;
+  background-color: #f7f7f7;
+  border: 1px solid #bbb;
+}
+
+.task-definition {
+  min-width: 400px;
+  float: left;
+  margin-right: 1em;
+  margin-bottom: 1em;
+  padding: 0.5em;
+  background-color: #f7f7f7;
+  border: 1px solid #bbb;
+}
+
+.task {
+  margin: 0.5em;
+  padding: 0.5em;
+  background-color: rgb(170, 210, 141);
+  border: 1px solid #75b348;
+}
+
+.family {
+  margin-bottom: 1em;
+  padding: 0.5em;
+  background-color: #f7f7f7;
+  border: 1px solid #bbb;
+}
+
+.action {
+  float: right;
+  display: block;
+  padding: 0px 3px;
+  margin-left: 3px;
+  text-decoration: none;
+  background: #75b348;
+  /* font-variant: small-caps; */
+  color: white;
+  border-radius: 2px;
+  font-size: 12px;
+  cursor: pointer;
+  border: 1px solid #75b348;
+}
+
+.action:hover {
+  background-color: rgb(170, 210, 141);
+  border: 1px solid #75b348;
+}
+
+select.actions {
+  color: white;
+  border-radius: 2px;
+  float: right;
+  background-color: #75b348;
+  outline: none;
+  border: 1px solid #75b348;
+}
+
+select.actions:hover {
+  background-color: rgb(170, 210, 141);
+}
+
+ul.container-list {
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px;
+}
+
+ul.container-list li {
+  padding: 2px;
+  background: #f7f7f7;
+  margin: 3px 0px;
+  border: 1px solid #75b348;
+}
+
+.port {
+  margin-left: 0.1em;
+  color: darkgrey;
+  font-size: 0.7em;
+}
+
+.index-list {
+  padding: 1em;
+  max-width:800px;
+}
+
+.index-list ul {
+  list-style: none;
+  padding: 0px;
+}
+
+.index-list ul li {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid #ececec;
+}
+
+.index-list ul li:first-child {
+  border-top: 1px solid #ececec;
+}
+
+.chart {
+  width: 100%;
+}
+
+.chart td {
+  padding: 0px;
+  font-size: small;
+}
+
+.chart_col {
+  width: 2em;
+}
+
+.resource_bar {
+  background: #75b348;
+  display: inline-block;
+  color: white;
+  padding-left: 2px;
+}
+
+.bar_td {
+  padding: 0px;
+  padding-left: 2px;
+}
+
+.resource_remaining, .resource_used {
+  text-align: right;
+}
+
+.time {
+  font-size: small;
+  margin: 0px;
+}
+
+.terminating {
+  background-color: #F7E482;
+}
+
+.none {
+  display: none;
+}
+
+p.action {
+  margin: 0px;
+}
+
+.pending {
+  background-color: #F7E482;
+  float: right;
+  border-radius: 2px;
+  font-size: small;
+  padding: 0px 3px;
+  color: #888828;
+  margin-left:3px;
+  border: 1px solid #F7E482;
+  height:14px;
+}
+
+.pico-copied-note, .pico-note {
+  font-size: small;
+  margin: 0;
+}
+
+.pico-check {
+  float: right;
+}
+
+.pico-check table {
+  border-collapse: collapse;
+}
+
+.pico-check table tr td input {
+  margin: 0;
+}
+
+.pico-content textarea {
+  background-color: black;
+  border: none;
+  color: rgb(170, 210, 141);
+}
+
+.ssh-signature {
+  /*display: inline-block;*/
+  float: right;
+  margin: 5px;
+  font-size: 12px;
+}
+
+.ssh-parameters-dialog {
+  background-color: hsl(0, 0%, 20%);
+  color: #ececec;
+  margin: auto;
+  margin-top: 100px;
+  padding: 10px;
+  width: 400px;
+}
+
+.ssh-parameters-dialog input {
+  background-color: hsl(0, 0%, 20%);
+  color: #ececec;
+  border: 1px solid #ececec;
+  padding: 2px;
+  width: 20em;
+}
+
+.ssh-parameters-dialog form>div:last-child {
+  text-align: center;
+  margin-top: 1em;
+}

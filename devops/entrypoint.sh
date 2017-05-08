@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
-set -uex
-if [ "$DEV_MODE" != 1 ];
+set -ex
+
+nginx
+
+if [ "$DEBUG" != 1 ];
 then
-    cd /web-server/ecs_view
-	gunicorn -c gunicorn_config.py server:app -u root
+    cd /web-server/gryphon
+    gunicorn -c gunicorn_config.py app:app -u root
 else
-	python3 /web-server/ecs_view/server.py
+    python3.5 /web-server/gryphon/app.py
 fi

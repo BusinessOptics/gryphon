@@ -1,0 +1,28 @@
+{% extends "template.html" %}
+
+{% block title %}ECS Overview{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block body %}
+<div class="header">
+	{% set link = 'https://console.aws.amazon.com/ecs/home?region={region}#/clusters'.format(region=region) %}
+  {% include "consolebutton.html" %}
+  <a class="action" href="/task_definitions"><i class="fa fa-tasks"></i> Task definitions</a>
+  <h1><i class="fa fa-cloud"></i> ECS Overview</h1>
+</div>
+<div class="index-list">
+  <h2>Clusters</h2>
+  <ul>
+    {% for cluster in clusters %}
+    <li>
+    <a href="cluster/{{cluster.clusterName}}/">{{cluster.clusterName|title}}</a>
+    {% set link = 'https://console.aws.amazon.com/ecs/home?region={region}#/clusters/{name}'.format(region=region, name=cluster.clusterName) %}
+    {% include "consolebutton.html" %}
+    <a class="action" href="cluster/{{cluster.clusterName}}/"><i class="fa fa-eye"></i> overview</a>
+    </li>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
