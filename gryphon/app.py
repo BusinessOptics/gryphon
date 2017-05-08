@@ -67,14 +67,15 @@ def ssh_parameters():
 
 @app.route("/cli/exec/<cluster_name>/<container>")
 def cli_exec(cluster_name, container):
-    container_name = container
     task_arn, ip = get_exec_info(cluster_name, container)
     if not(task_arn and ip):
         return 'echo "Cluster or Container not found (Did you mistype?)"'
 
-    command = 'echo set -eux; containerName="' + container_name + '"; ' + 'taskArn=' + task_arn + '; ' +\
-              'dockerCommand="CONTAINER_ID=\\`curl http://localhost:51678/v1/tasks?taskarn=${taskArn} | jq -r \\".Containers[] | select(.Name==\\\\\\"${containerName}\\\\\\").DockerId\\"\\`; sudo docker exec -it -u root \\${CONTAINER_ID} bash"; ' +\
-              'ssh ' + ip + ' -t -t "set -ex; $dockerCommand"'
+    command = 'set -eux;\n' \
+              'containerName="' + container + '";\n' + \
+              'taskArn=' + task_arn + ';\n' +\
+              'dockerCommand="CONTAINER_ID=\\`curl http://localhost:51678/v1/tasks?taskarn=${taskArn} | jq -r \\".Containers[] | select(.Name==\\\\\\"${containerName}\\\\\\").DockerId\\"\\`; sudo docker exec -it -u root \\${CONTAINER_ID} bash";\n' +\
+              'ssh ' + ip + ' -t "set -ex; $dockerCommand"'
     return command
 
 
