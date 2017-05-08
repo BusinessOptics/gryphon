@@ -1,5 +1,4 @@
 from collections import defaultdict
-from multiprocessing.pool import ThreadPool
 import base64
 import functools
 import logging
@@ -11,10 +10,31 @@ ecs = boto3.client('ecs')
 ec2 = boto3.resource('ec2')
 auto_scaling = boto3.client('autoscaling')
 ecr = boto3.client('ecr')
+boto_session = boto3.session.Session()
 
-logger = logging.getLogger(__name__)
+region = boto_session.region_name
 
-thread_pool = ThreadPool(10)
+logger = logging.getLogger()
+
+def list_all_children(function, child_field, *args, **kwargs):
+    """
+    Given a standard AWS boto list_* function this will return all the child
+    objects taking possible paging into account.
+    """
+    def innerFn():
+        first_response = function(*args, **kwargs)
+        for child in first_response[child_field]:
+            yield child
+
+        next_token = first_response.get('nextToken')
+
+        while next_token:
+            response = function(*args, nextToken=next_token, **kwargs)
+            next_token = response.get('nextToken')
+            for child in response[child_field]:
+                yield child
+
+    return list(innerFn())
 
 def get_authorization():
     authorization = ecr.get_authorization_token()['authorizationData'][0]
@@ -53,7 +73,7 @@ def list_clusters():
     return ecs.describe_clusters(clusters=cluster_keys)['clusters']
 
 
-# @functools.lru_cache(maxsize=None)
+@functools.lru_cache(maxsize=None)
 def get_task_definition(arn):
     logger.info("Describing task definition {}".format(arn))
     return ecs.describe_task_definition(
@@ -62,14 +82,10 @@ def get_task_definition(arn):
 
 
 def get_task_def_list():
-    lst_all = ecs.list_task_definitions()
-    lst_raw = lst_all['taskDefinitionArns']
-    lst_token = lst_all.get('nextToken')
-
-    while lst_token is not None:
-        lst_info = ecs.list_task_definitions(nextToken=lst_token)
-        lst_token = lst_info.get('nextToken')
-        lst_raw = lst_raw + lst_info['taskDefinitionArns']
+    lst_raw = list_all_children(
+                ecs.list_task_definitions,
+                'taskDefinitionArns'
+                )
 
     task_fam_list = defaultdict(list)
     fam_to_rev = defaultdict(list)
@@ -85,10 +101,10 @@ def get_task_def_list():
         temp_list = fam_to_rev[key]
         temp_list.sort(reverse=True)
         top_5 = temp_list[:5]
-        final_list = [ arn for num, arn in top_5 ]
+        final_list = [arn for _, arn in top_5]
         lst = lst+final_list
 
-    t_definitions = thread_pool.map(get_task_definition, lst)
+    t_definitions = map(get_task_definition, lst)
     for definition in t_definitions:
         task_fam = definition['family']
         arn = definition['taskDefinitionArn']
@@ -132,21 +148,23 @@ class Cluster:
         container_defs = {}
 
         logger.info("Starting retrieving tasks list")
-        task_info = ecs.list_tasks(cluster=self.name)
-        task_keys = task_info['taskArns']
-        task_next_token = task_info.get('nextToken')
+        task_keys = list_all_children(ecs.list_tasks, 'taskArns', cluster=self.name)
+
         if not task_keys:
             return
-        while task_next_token is not None:
-            logger.info("Continue retrieving tasks list")
-            task_info = ecs.list_tasks(cluster=self.name, nextToken=task_next_token)
-            task_next_token = task_info.get('nextToken')
-            task_keys = task_keys + task_info['taskArns']
 
         logger.info("Describes tasks")
         task_info = ecs.describe_tasks(cluster=self.name, tasks=task_keys)['tasks']
         cont_inst_arn = defaultdict(list)
         task_dict = defaultdict(list)
+
+        all_container_instances = list_all_children(
+                ecs.list_container_instances,
+                'containerInstanceArns',
+                cluster=self.name)
+
+        for ci_arn in all_container_instances:
+            cont_inst_arn[ci_arn] = []
 
         for task in task_info:
             task_arn = task['taskArn']
@@ -158,7 +176,7 @@ class Cluster:
             for cont in task['containers']:
                 container_arn = cont['containerArn']
                 containers[container_arn] = Container(arn=container_arn,
-                                                      name=cont['name'],
+                                                      container=cont,
                                                       task=tasks[task_arn],
                                                       status=cont['lastStatus'])
                 conts.append(containers[container_arn])
@@ -167,7 +185,7 @@ class Cluster:
 
         families = defaultdict(list)
         cont_defs_by_task_defs = defaultdict(list)
-        t_definitions = thread_pool.map(get_task_definition, task_dict.keys())
+        t_definitions = map(get_task_definition, task_dict.keys())
         for definition in t_definitions:
             task_def_arn = definition['taskDefinitionArn']
             task_defs[task_def_arn] = TaskDefinition(arn=task_def_arn,
@@ -184,6 +202,7 @@ class Cluster:
                 environments = {env['name']: env['value'] for env in cont_def['environment']}
                 conts = [cont for cont in containers.values() if
                          cont.name == container_def_name]
+                print(cont_def)
                 temp_container = ContainerDefinition(name=container_def_name,
                                                      image=cont_def['image'],
                                                      task_definition=task_defs[task_def_arn],
@@ -278,7 +297,9 @@ class Instance:
             self.auto_scaling_group = ""
             self.life_cycle_state = ""
 
-        tags = {value['Key']: value['Value'] for value in ec2_instance.tags}
+        tag_list = ec2_instance.tags or []
+
+        tags = {value['Key']: value['Value'] for value in tag_list}
         self.name = tags.get('Name', '')
 
         resource_keys = ["CPU", "MEMORY"]
@@ -304,9 +325,15 @@ class Instance:
 
 
 class Container:
-    def __init__(self, arn=None, name=None, task=None, status=None, container_def=None):
+    def __init__(self, arn=None, container=None, task=None, status=None, container_def=None):
         self.arn = arn
-        self.name = name
+        self.name = container['name']
+
+        network_bindings = container.get('networkBindings', [])
+        self.host_port = None
+        if network_bindings:
+            self.host_port = network_bindings[0]['hostPort']
+
         self.task = task
         self.status = status
         self.container_def = container_def
@@ -335,4 +362,4 @@ class ContainerDefinition:
         self.task_definition = task_definition
         self.containers = containers
         self.environments = environments
-
+        print(name, task_definition)

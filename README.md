@@ -1,57 +1,72 @@
-ECS Cluster Viewer
-==================
+Gryphon Cluster Viewer
+======================
+
+Amazon EC2 Container Service Interface
 
 <img src="/mascot.png?raw=true" width="500">
 
-#Description
+A simply designed web-based application to allow users to view a clear interface for the AWS console showing information such as tasks running on each instance as well as the commands to ssh into the instance or run the docker container for debugging. It is a very thin layer over the AWS API's to make common tasks easier and give a much better general overview. 
 
-This is a simply designed web-based application to allow users to view a clear interface for the AWS console showing information such as tasks running on each instance as well as the commands to ssh into the instance or run the docker container for bug fixing
+Features include:
 
-#Requirements
-
-Docker: Installation instructions can be found [here](https://docs.docker.com/engine/installation/)
+* Easily see your cluster state, including all the instances and tasks
+* See resource allocation
+* See autoscaling terminations
+* Shortcuts to different AWS interfaces and other useful quick links.
+* Quickly ssh into you instances
+* Exec directly into a running container in a task. A single command that ssh's finds the container ID and execs into it.
+* Manually run any task definition. Gives the terminal commands to run a container exactly as ECS would to make debugging easier.
 
 # Running Instructions
 
-1. Run `build.sh` from inside the devops folder. (This may take some time depending on your internet connction)
-2. Run `sudo docker run -it -e AWS_ACCESS_KEY_ID=YOUR_KEY_HERE -e AWS_SECRET_ACCESS_KEY=YOUR_KEY_HERE -e AWS_DEFAULT_REGION=YOUR_KEY_HERE -e DEV_MODE=0 -p 3000:3000 gryphon` to run the docker container. If environment variables are set simply use `$(ENVIRONMENT_VARIABLE_NAME)` inplace of `YOUR_KEY_HERE`.
-3. From here you may open a web browser and navigate to localhost:3000 or 127.0.0.1:3000 to view the app.
-4. When you are finished give a keyboard intterupt to the terminal by pressing `ctrl-c` to stop the container
-5. (OPTIONAL) To remove the exited containers run `sudo docker rm $(sudo docker ps -q -f status=exited)`
+You can run it directly from dockerhub with:
 
-You may wish to get the exec command for a specific container for which you know the cluster on which it is running without loading the site. running `curl 127.0.0.1/cli/exec/CLUSTER_NAME/CONTAINER_NAME` will net this result.
+```
+docker run \
+  -e AWS_ACCESS_KEY_ID=<AWS_ACCESS_KEY_ID> \
+  -e AWS_DEFAULT_REGION=<AWS_DEFAULT_REGION> \
+  -e AWS_SECRET_ACCESS_KEY=<AWS_SECRET_ACCESS_KEY> \
+  -p 3000:3000 \
+  --name=gryphon \
+  businessoptics/gryphon
+```
 
-If you wish to pipe this automatically into bash add this function to your .bash_profile
+Gryphon uses boto to communicate with AWS so if you run it on ECS with a task role it can use that task role's AWS credentials automatically. The task role, or the credentials require at least the rights of the below IAM policy.
 
-    function gryphoncurl {
-        stty raw -echo ; ( curl $1 && cat ) | bash ; stty sane
-    }
+```json
+{
+    "Version": "<VERSION-DATE>",
+    "Statement": [
+        {
+            "Sid": "<StmtXXXXXX>",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:Describe*",
+                "ecs:List*",
+                "ecs:Describe*",
+                "ec2:List*",
+                "autoscaling:Describe*",
+                "autoscaling:List*",
+                "ecr:GetAuthorizationToken"
+            ],
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+}
+```
 
-Then call `gryphoncurl 127.0.0.1/cli/exec/CLUSTER_NAME/CONTAINER_NAME` to immediately ssh in.
+# Command Line Interface
 
-Alternatively if the url is predefined you may wish to define the function as follows:
+You can get the command to exec into a container in your shell by running:
+ 
+    curl 127.0.0.1/cli/exec/CLUSTER_NAME/CONTAINER_NAME
 
-    function gryphon {
-        stty raw -echo ; ( curl BASE_URL/cli/exec/$1/$2 && cat ) | bash ; stty sane
-    }
+To immediately run this command without copy/pasting, wrap it in `bash -c "$()"`, i.e:
 
-The calling `gryphon CLUSTER_NAME CONTAINER_NAME` will result in the same events.
+    bash -c "$(curl 127.0.0.1/cli/exec/CLUSTER_NAME/CONTAINER_NAME)"
 
-List of Scripts:
+**Credits**
 
-	build.sh - builds the docker image
-	run-dev.sh - run the program in development mode (Flask with debug mode, no gunicorn)
-	push.sh - pushes the image to AWS ECR
-	entrypoint.sh - script run on container start-up to start the server
-
-# Configuration Requirements
-
-Set the following Environment variables:
-
-	AWS_SECRET_ACCESS_KEY
-	AWS_ACCESS_KEY_ID
-	AWS_DEFAULT_REGION
-	DEV_MODE (1 if in dev_mode, 0 otherwise)
-
-
-
+Thanks to the wonderful Lauren Dawson aka Iguanamouth for the base image of the mascot. Please check out her work [here](http://lizardshuffle.tumblr.com/).

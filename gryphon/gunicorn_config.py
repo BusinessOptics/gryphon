@@ -1,10 +1,8 @@
-import os
-
 user = 'www-data'
-bind = '0.0.0.0:3000'
-workers = 6
-# Requires eventlet >= 0.9.7
-worker_class = 'sync'
+bind = '0.0.0.0:8000'
+# Limited to 1 to prevent requests being routed to wrong worker.
+workers = 1
+worker_class = 'gevent'
 worker_connections = 1024
 # The number of seconds to wait for requests on a Keep-Alive connection.
 # Set higher than default to deal with latency.
