@@ -39,12 +39,31 @@ def list_all_children(function, child_field, *args, **kwargs):
 def get_authorization():
     authorization = ecr.get_authorization_token()['authorizationData'][0]
     encoded_token = authorization['authorizationToken']
-    token = str(base64.b64decode(encoded_token), "utf-8")
+    token = base64.b64decode(encoded_token).decode("utf-8")
     proxy = authorization['proxyEndpoint']
     index = token.find(':')
     username = token[:index]
     password = token[index+1:]
     return {'username': username, 'password': password, 'endpoint': proxy}
+
+
+def get_exec_info(cluster, container_name):
+    task_arns = ecs.list_tasks(cluster=cluster)['taskArns']
+    tasks = ecs.describe_tasks(cluster=cluster, tasks=task_arns)['tasks']
+    for task in tasks:
+        containers = task['containers']
+        for container in containers:
+            if container['name'] != container_name:
+                continue
+            instance_arn = task['containerInstanceArn']
+            instance = ecs.describe_container_instances(
+                cluster=cluster, containerInstances=[instance_arn])['containerInstances'][0]
+            instance_ec2_id = instance['ec2InstanceId']
+            ec2_instance = list(ec2.instances.filter(InstanceIds=[instance_ec2_id]))[0]
+            ip = ec2_instance.private_ip_address
+            task_arn = task['taskArn']
+            return task_arn, ip
+    return "", ""
 
 
 def list_clusters():

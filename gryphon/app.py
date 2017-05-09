@@ -3,7 +3,8 @@ import os
 import logging
 
 from flask import Flask, render_template, session, request, redirect
-from aws_classes import Cluster, get_authorization, list_clusters, get_task_def_list, region
+from aws_classes import (Cluster, get_authorization, list_clusters,
+                         get_task_def_list, region, get_exec_info)
 
 logFormatter = logging.Formatter(
     "%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s"
@@ -62,6 +63,21 @@ def ssh_parameters():
     return render_template('ssh_parameters.html',
                            ssh_signature=session.get('ssh_signature', ''),
                            region=region)
+
+
+@app.route("/cli/exec/<cluster_name>/<container>")
+def cli_exec(cluster_name, container):
+    task_arn, ip = get_exec_info(cluster_name, container)
+    if not(task_arn and ip):
+        return 'echo "Cluster or Container not found (Did you mistype?)"'
+
+    command = 'set -eux;\n' \
+              'containerName="' + container + '";\n' + \
+              'taskArn=' + task_arn + ';\n' +\
+              'dockerCommand="CONTAINER_ID=\\`curl http://localhost:51678/v1/tasks?taskarn=${taskArn} | jq -r \\".Containers[] | select(.Name==\\\\\\"${containerName}\\\\\\").DockerId\\"\\`; sudo docker exec -it -u root \\${CONTAINER_ID} bash";\n' +\
+              'ssh ' + ip + ' -t "set -ex; $dockerCommand"'
+    return command
+
 
 
 if __name__ == '__main__':

@@ -57,6 +57,15 @@ Gryphon uses boto to communicate with AWS so if you run it on ECS with a task ro
 }
 ```
 
+# Command Line Interface
+
+You can get the command to exec into a container in your shell by running:
+ 
+    curl 127.0.0.1/cli/exec/CLUSTER_NAME/CONTAINER_NAME
+
+To immediately run this command without copy/pasting, wrap it in `bash -c "$()"`, i.e:
+
+    bash -c "$(curl 127.0.0.1/cli/exec/CLUSTER_NAME/CONTAINER_NAME)"
 
 **Credits**
 
