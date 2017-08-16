@@ -65,6 +65,13 @@ def ssh_parameters():
                            region=region)
 
 
+@app.route('/cluster/<cluster_name>/stop/<path:task_arn>')
+def stop_task(cluster_name, task_arn):
+    cluster = Cluster(name=cluster_name)
+    cluster.stop_task(task_arn)
+    return redirect("/cluster/{}/".format(cluster_name))
+
+
 @app.route("/cli/exec/<cluster_name>/<container>")
 def cli_exec(cluster_name, container):
     task_arn, ip = get_exec_info(cluster_name, container)
