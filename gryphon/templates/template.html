@@ -88,15 +88,21 @@
         attachContainer(ip, task, containerName);
       } else if (action == "run") {
         run(imageName, env, authData);
-      }
+      } 
 
       if (action != "action") {
         select.value= "action"
       }
     }
+    
+    function stopTask(cluster, task) {
+      if (confirm("Are you sure you want to kill this task?")) {
+        location = "/cluster/"+cluster+"/stop/"+task; 
+      }
+    }
 
     function ssh(ip) {
-      var command = "ssh " + ip;
+      var command = "ssh " + sshArgs + ip;
       generatePicoModal(command, "2em", false).show();
     }
 

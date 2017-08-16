@@ -5,7 +5,11 @@
   </div>
   {% endif %}
   {{task.definition.family.name}}:{{task.definition.revision}}
+  
+  
   <a class='action' target='_blank' href="https://console.aws.amazon.com/ecs/home?region={{region}}#/clusters/{{cluster.name}}/tasks/{{task.arn[-36:]}}">console</a>
+  
+  <button class='action' onclick="stopTask('{{cluster.name}}', '{{task.arn}}')">stop</button>
 
   <ul class='container-list'>
     {% for container in task.containers %}

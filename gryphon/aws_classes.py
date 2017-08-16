@@ -262,6 +262,12 @@ class Cluster:
         self.tasks = sorted(tasks.values(), key=lambda x: x.definition.family.name)
         self.task_families = sorted(task_families.values(), key=lambda x: x.name)
 
+    def stop_task(self, task_arn):
+        response = ecs.stop_task(
+            cluster=self.name,
+            task=task_arn,
+            reason='Task stopped by user (gryphon)'
+        )
 
 class Task:
     def __init__(self, arn=None, definition=None, containers=None,
