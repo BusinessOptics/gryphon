@@ -79,7 +79,7 @@
         generatePicoModal(command, "10em", false).show();
     }
     
-    function taskAction(select, imageName, env, authData, ip, task, containerName) {
+    function taskAction(select, imageName, env, authData, ip, task, containerName, taskDefFamilyName) {
       var action = select.value;
 
       if (action == "exec") {
@@ -88,7 +88,9 @@
         attachContainer(ip, task, containerName);
       } else if (action == "run") {
         run(imageName, env, authData);
-      } 
+      } else if (action === "environment") {
+        window.location.href = "/environment/" + taskDefFamilyName + "/" + containerName;
+      }
 
       if (action != "action") {
         select.value= "action"

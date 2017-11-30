@@ -136,6 +136,35 @@ def extract_resource(resources_list, name):
     return resource[value_name]
 
 
+def parse_task_def_arn(arn):
+    return re.match(r'arn:.*:task-definition/(.+):(\d+)', arn).groups()
+
+
+def parse_cluster_arn(arn):
+    return re.match(r'arn:.*:cluster/(.+)', arn).group(1)
+
+
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+
+def describe_all_services_in_cluster(cluster):
+    service_arns = ecs.list_services(cluster=cluster)['serviceArns']
+    if not service_arns:
+        return
+    for chunk in chunks(service_arns, 10):
+        for s in ecs.describe_services(services=chunk, cluster=cluster)['services']:
+            yield s
+
+
+def describe_all_services():
+    for cluster in ecs.list_clusters()['clusterArns']:
+        for s in describe_all_services_in_cluster(cluster):
+            yield cluster, s
+
+
 class Cluster:
     def __init__(self, name):
         self.name = name
