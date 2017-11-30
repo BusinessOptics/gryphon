@@ -1,0 +1,56 @@
+{% extends "template.html" %}
+
+{% set title = '{} : {} Environment'.format(task_def_family_name, container_name) %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+  <div class='header'>
+    <h1>{{ title }}</h1>
+  </div>
+  <div class="body-container">
+    {% include "messages.html" %}
+
+    <p>Task definition revision: {{ task_def.revision }}</p>
+
+    <form method="post">
+      <table class="environment">
+        <tr>
+          <th>Name</th>
+          <th>Value</th>
+        </tr>
+        {% for env in container.environment %}
+          <tr>
+            <td><input type="text" name="env_{{ loop.index }}_name" value="{{ env.name }}"></td>
+            <td><input type="text" name="env_{{ loop.index }}_value" value="{{ env.value }}"></td>
+          </tr>
+        {% endfor %}
+        {% for i in range(8) %}
+          <tr>
+            <td><input type="text" name="new_{{ loop.index }}_name"></td>
+            <td><input type="text" name="new_{{ loop.index }}_value"></td>
+          </tr>
+        {% endfor %}
+      </table>
+
+      {% if matching %}
+        <p><strong>Service(s) running this task definition:</strong> {{ matching_string }}</p>
+      {% else %}
+        <p><strong>No services running this task definition.</strong></p>
+      {% endif %}
+
+      {% if wrong_revision %}
+        <p><strong>Service(s) running an old revision of this task definition:</strong></p>
+        <ul>
+          {% for cluster, service, revision in wrong_revision %}
+            <li><a href="/cluster/{{ cluster }}/">{{ cluster }}</a>:{{ service }}
+              is running {{ task_def_family_name }}:{{ revision }}</li>
+          {% endfor %}
+        </ul>
+        <p><label><input type="checkbox" name="update_old_services"> Update these outdated services as well</label></p>
+      {% endif %}
+
+      <button type="submit">Update environment of services</button>
+    </form>
+  </div>
+{% endblock %}

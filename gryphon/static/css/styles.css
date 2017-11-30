@@ -293,3 +293,39 @@ p.action {
   text-align: center;
   margin-top: 1em;
 }
+
+.body-container {
+  margin: 1em;
+}
+
+table.environment {
+  border-collapse: collapse;
+}
+
+table.environment td, table.environment th {
+  border: 1px solid black;
+  padding: 3px;
+}
+
+table.environment input {
+  width: 40em;
+}
+
+button[type=submit] {
+  background: #75b348;
+  color: white;
+  border-radius: 5px;
+  border: 1px solid #75b348;
+  font-size: 120%;
+  cursor: pointer;
+}
+
+button[type=submit]:hover {
+  background-color: rgb(170, 210, 141);
+  border: 1px solid #75b348;
+}
+
+.messages {
+  background: #75b348;
+  color: white;
+}

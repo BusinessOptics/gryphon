@@ -26,11 +26,13 @@
                              {{auth_data | tojson | safe}},
                              "{{task.instance.ip}}",
                              "{{task.arn}}", 
-                             "{{container.name}}")'>
+                             "{{container.name}}",
+                             "{{task.definition.family.name}}")'>
         <option>action</option>
         <option>run</option>
         <option>exec</option>
         <option>attach</option>
+        <option>environment</option>
       </select>
     </li>
     {% endif %}
