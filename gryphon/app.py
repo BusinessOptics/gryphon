@@ -114,7 +114,6 @@ def environment_table(task_def_family_name, container_name):
             break
     else:
         raise ValueError('Container %s not found' % container_name)
-    wrong_revision.append(('fake cluster', 'fake service', 123))  # TODO
 
     if request.method == 'POST':
         container['environment'] = []
