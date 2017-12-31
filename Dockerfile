@@ -4,7 +4,7 @@ MAINTAINER Alex Hall, <alex.mojaki@gmail.com>
 ENV apti "apt-get install -y "
 RUN apt-get update
 RUN $apti software-properties-common
-RUN add-apt-repository ppa:fkrull/deadsnakes
+RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt-get update
 RUN $apti python3.5
 RUN $apti python3.5-dev
