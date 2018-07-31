@@ -151,12 +151,13 @@ def chunks(lst, n):
 
 
 def describe_all_services_in_cluster(cluster):
-    service_arns = ecs.list_services(cluster=cluster)['serviceArns']
-    if not service_arns:
-        return
-    for chunk in chunks(service_arns, 10):
-        for s in ecs.describe_services(services=chunk, cluster=cluster)['services']:
-            yield s
+    for response in ecs.get_paginator('list_services').paginate(cluster=cluster):
+        service_arns = response['serviceArns']
+        if not service_arns:
+            continue
+        for chunk in chunks(service_arns, 10):
+            for s in ecs.describe_services(services=chunk, cluster=cluster)['services']:
+                yield s
 
 
 def describe_all_services():
