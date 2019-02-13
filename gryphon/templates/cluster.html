@@ -28,20 +28,6 @@ Cluster Overview{% endblock %} {% block scripts %} {% endblock %} {% block body
       <div class="fargate">
         {% for task in cluster.fargate.tasks %} {% include "task.html" %} {%
         endfor %}
-
-        {% for task in cluster.fargate.tasks %} {% include "task.html"
-        %} {% endfor %} {% for task in cluster.fargate.tasks %} {% include
-        "task.html" %} {% endfor %} {% for task in cluster.fargate.tasks %} {%
-        include "task.html" %} {% endfor %}{% for task in cluster.fargate.tasks
-        %} {% include "task.html" %} {% endfor %}{% for task in
-        cluster.fargate.tasks %} {% include "task.html" %} {% endfor %}{% for
-        task in cluster.fargate.tasks %} {% include "task.html" %} {% endfor
-        %}{% for task in cluster.fargate.tasks %} {% include "task.html" %} {%
-        endfor %}{% for task in cluster.fargate.tasks %} {% include "task.html"
-        %} {% endfor %}{% for task in cluster.fargate.tasks %} {% include
-        "task.html" %} {% endfor %}{% for task in cluster.fargate.tasks %} {%
-        include "task.html" %} {% endfor %}{% for task in cluster.fargate.tasks
-        %} {% include "task.html" %} {% endfor %}
       </div>
     </div>
     {% endif %}
@@ -107,11 +93,11 @@ Cluster Overview{% endblock %} {% block scripts %} {% endblock %} {% block body
                 <span class="time" id="time-{{ instance.id }}"></span>
                 <script>
                   var launch = new Date({{ instance.launch_time.year }},
-                  { { instance.launch_time.month } } -1,
-                    {{ instance.launch_time.day }},
-                  { { instance.launch_time.hour } },
-                  { { instance.launch_time.minute } },
-                  { { instance.launch_time.second } });
+                  {{ instance.launch_time.month }} -1,
+                  {{ instance.launch_time.day }},
+                  {{ instance.launch_time.hour }},
+                  {{ instance.launch_time.minute }},
+                  {{ instance.launch_time.second }});
                   setTime(launch, document.getElementById("time-{{instance.id}}"));
                 </script>
               </td>
