@@ -50,6 +50,7 @@ h2 {
   padding: 1em;
   padding-right: 0px;
   padding-bottom: 0em;
+  flex-grow: 1;
 }
 
 .task-definition-container {
@@ -61,7 +62,7 @@ h2 {
 .families {
   padding: 1em;
   padding-bottom: 0em;
-  min-width: 300px;
+  min-width: 450px;
   border-left: 1px solid #bbb;
 }
 
@@ -75,17 +76,26 @@ h2 {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  float:left;
+  float: left;
 }
 
-.instance {
+.instance,
+.fargate {
   min-width: 350px;
-  float: left;
   margin-right: 1em;
   margin-bottom: 1em;
   padding: 0.5em;
   background-color: #f7f7f7;
   border: 1px solid #bbb;
+}
+
+.instance {
+  float: left;
+}
+
+.fargate {
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .task-definition {
@@ -166,7 +176,7 @@ ul.container-list li {
 
 .index-list {
   padding: 1em;
-  max-width:800px;
+  max-width: 800px;
 }
 
 .index-list ul {
@@ -209,7 +219,8 @@ ul.container-list li {
   padding-left: 2px;
 }
 
-.resource_remaining, .resource_used {
+.resource_remaining,
+.resource_used {
   text-align: right;
 }
 
@@ -219,7 +230,7 @@ ul.container-list li {
 }
 
 .terminating {
-  background-color: #F7E482;
+  background-color: #f7e482;
 }
 
 .none {
@@ -231,18 +242,19 @@ p.action {
 }
 
 .pending {
-  background-color: #F7E482;
+  background-color: #f7e482;
   float: right;
   border-radius: 2px;
   font-size: small;
   padding: 0px 3px;
   color: #888828;
-  margin-left:3px;
-  border: 1px solid #F7E482;
-  height:14px;
+  margin-left: 3px;
+  border: 1px solid #f7e482;
+  height: 14px;
 }
 
-.pico-copied-note, .pico-note {
+.pico-copied-note,
+.pico-note {
   font-size: small;
   margin: 0;
 }
@@ -289,7 +301,7 @@ p.action {
   width: 20em;
 }
 
-.ssh-parameters-dialog form>div:last-child {
+.ssh-parameters-dialog form > div:last-child {
   text-align: center;
   margin-top: 1em;
 }
@@ -302,7 +314,8 @@ table.environment {
   border-collapse: collapse;
 }
 
-table.environment td, table.environment th {
+table.environment td,
+table.environment th {
   border: 1px solid black;
   padding: 3px;
 }
@@ -311,7 +324,7 @@ table.environment input {
   width: 40em;
 }
 
-button[type=submit] {
+button[type="submit"] {
   background: #75b348;
   color: white;
   border-radius: 5px;
@@ -320,7 +333,7 @@ button[type=submit] {
   cursor: pointer;
 }
 
-button[type=submit]:hover {
+button[type="submit"]:hover {
   background-color: rgb(170, 210, 141);
   border: 1px solid #75b348;
 }

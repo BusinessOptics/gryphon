@@ -1,26 +1,26 @@
-<div class='task'>
+<div class="task">
   {% if task.last_status == 'PENDING' %}
   <div class="pending">
     pending
   </div>
   {% endif %}
-  {{task.definition.family.name}}:{{task.definition.revision}}
-  
-  
-  <a class='action' target='_blank' href="https://console.aws.amazon.com/ecs/home?region={{region}}#/clusters/{{cluster.name}}/tasks/{{task.arn[-36:]}}">console</a>
-  
-  <button class='action' onclick="stopTask('{{cluster.name}}', '{{task.arn}}')">stop</button>
+  {{ task.definition.family.name }}:{{ task.definition.revision }}
 
-  <ul class='container-list'>
-    {% for container in task.containers %}
-    {% if container.status %}
+  <a class="action" target="_blank" href="https://console.aws.amazon.com/ecs/home?region={{
+      region
+    }}#/clusters/{{ cluster.name }}/tasks/{{task.arn[-36:]}}">console</a>
+
+  <button class="action" onclick="stopTask('{{ cluster.name }}', '{{ task.arn }}')">
+    stop
+  </button>
+
+  <ul class="container-list">
+    {% for container in task.containers %} {% if container.status %}
     <li>
-      {{container.name}}{% if container.host_port %}<span class='port'>:{{container.host_port}}</span>{% endif %}
+      {{ container.name }}{% if container.host_port %}<span class="port">:{{ container.host_port }}</span>{% endif %}
       {% set container_def = container.container_def %}
-       
-      <select 
-        class="actions" 
-        onchange='taskAction(this, 
+
+      <select class="actions" onchange='taskAction(this, 
                              "{{container_def.image}}",
                              {{container_def.environments | tojson | safe}},
                              {{auth_data | tojson | safe}},
@@ -29,13 +29,11 @@
                              "{{container.name}}",
                              "{{task.definition.family.name}}")'>
         <option>action</option>
-        <option>run</option>
-        <option>exec</option>
-        <option>attach</option>
-        <option>environment</option>
+        {% for action in task.actions %}
+        <option>{{ action }}</option>
+        {% endfor %}
       </select>
     </li>
-    {% endif %}
-    {% endfor %}
+    {% endif %} {% endfor %}
   </ul>
 </div>
